@@ -4,3 +4,8 @@ spring:
   threads:
     virtual:
       enabled: true
+  mongodb:
+    uri: mongodb://root:password@localhost:27017/product-db?authSource=admin
+
+server:
+  port: 8080
