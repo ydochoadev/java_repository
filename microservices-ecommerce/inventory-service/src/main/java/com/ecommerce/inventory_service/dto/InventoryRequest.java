@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class inventoryRequest {
+public class InventoryRequest {
 
     @NotBlank(message = "El SKU no puede estar vacío")
     private String sku;
