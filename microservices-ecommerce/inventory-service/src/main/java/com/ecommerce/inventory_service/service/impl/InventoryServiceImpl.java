@@ -20,7 +20,6 @@ import java.util.List;
 public class InventoryServiceImpl implements InventoryService {
     private final InventoryRepository inventoryRepository;
     private final InventoryMapper inventoryMapper;
-    private final InventoryService inventoryService;
 
     @Override
     @Transactional
