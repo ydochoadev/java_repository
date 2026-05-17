@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,20 +23,36 @@ import java.util.UUID;
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
+    private final WebClient.Builder webClientBuilder;
 
     @Override
     @Transactional
     public OrderResponse placeOrder(OrderRequest orderRequest) {
         log.info("Colocando nueva orden...");
+        Order order = orderMapper.toOrder(orderRequest);
+        for (var item : order.getOrderLineItemsList()) {
+            String sku = item.getSku();
+            Integer quantity = item.getQuantity();
+            // Realizar la llamada a inventory
+            Boolean inStock = webClientBuilder.build().get()
+                    .uri("http://localhost:8082/api/v1/inventory/" + sku,
+                            uriBuilder -> uriBuilder.queryParam("quantity", quantity).build())
+                    .retrieve()
+                    .bodyToMono(Boolean.class)
+                    .block(); // petición bloqueante
+
+            if (!Boolean.TRUE.equals(inStock)) {
+                throw new IllegalArgumentException("No hay stock disponible para el producto " + sku);
+            }
+        }
         // Mapeo manual de items para asegurar la lista
-        List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
+        /*List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
                 .stream()
                 .map(orderMapper::toOrderLineItems)
-                .toList();
+                .toList();*/
 
-        Order order = new Order();
         order.setOrderNumber(UUID.randomUUID().toString());
-        order.setOrderLineItemsList(orderLineItems);
+        // order.setOrderLineItemsList(orderLineItems);
 
         // Guardamos y capturamos la entidad persistida
         Order savedOrder = orderRepository.save(order);
