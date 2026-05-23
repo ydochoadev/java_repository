@@ -34,22 +34,18 @@ public class OrderServiceImpl implements OrderService {
             String sku = item.getSku();
             Integer quantity = item.getQuantity();
             // Realizar la llamada a inventory
-            Boolean inStock = webClientBuilder.build().get()
-                    .uri("http://localhost:8082/api/v1/inventory/" + sku,
-                            uriBuilder -> uriBuilder.queryParam("quantity", quantity).build())
-                    .retrieve()
-                    .bodyToMono(Boolean.class)
-                    .block(); // petición bloqueante
-
-            if (!Boolean.TRUE.equals(inStock)) {
-                throw new IllegalArgumentException("No hay stock disponible para el producto " + sku);
+            try {
+                webClientBuilder.build().put()
+                        .uri("http://localhost:8082/api/v1/inventory/reduce/" + sku,
+                                uriBuilder -> uriBuilder.queryParam("quantity", quantity).build())
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .block(); // petición bloqueante
+            } catch (Exception e) {
+                log.error("Error al reducir stock del producto {}. {}", sku, e.getMessage());
+                throw new IllegalArgumentException("No se pudo procesa la orden: Stock insuficiente o error de inventario");
             }
         }
-        // Mapeo manual de items para asegurar la lista
-        /*List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
-                .stream()
-                .map(orderMapper::toOrderLineItems)
-                .toList();*/
 
         order.setOrderNumber(UUID.randomUUID().toString());
         // order.setOrderLineItemsList(orderLineItems);
