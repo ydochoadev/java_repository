@@ -80,4 +80,22 @@ public class InventoryServiceImpl implements InventoryService {
         inventoryRepository.deleteById(id);
         log.info("Inventario eliminado con ID: {}", id);
     }
+
+    @Override
+    @Transactional
+    public void reduceStock(String sku, Integer quantity) {
+        var inventory = inventoryRepository.findBySku(sku)
+                .orElseThrow(
+                        () -> new RuntimeException("Producto no encontrado" + sku)
+                );
+        if (inventory.getQuantity() < quantity) {
+            throw new RuntimeException("Stock insuficiente para: " + sku);
+        }
+
+        inventory.setQuantity(inventory.getQuantity() - quantity);
+        // Retorna Inventory, pero por "Command Query Separation" => Separa métodos en 2 tipos:
+        // Query => Preguntas, devuelven datos pero no cambian nada
+        // commands => Órdenes, cambian datos pero no suelen devolver nada (tipo void)
+        inventoryRepository.save(inventory);
+    }
 }
