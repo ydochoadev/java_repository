@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: file:///d:/new_projects/java/microservices-ecommerce/config-data
+          clone-on-start: true
+          default-label: main
+          # Forzar el nombre de la rama
+          search-paths: '{defaultLabel}'
+          # Evitar cache de repositorio
+          basedir: ./config-repo-cache
+
+server:
+  port: 8888
