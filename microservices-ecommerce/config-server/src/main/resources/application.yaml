@@ -5,13 +5,15 @@ spring:
     config:
       server:
         git:
-          uri: file:///d:/new_projects/java/microservices-ecommerce/config-data
+          uri: https://github.com/ydochoadev/microservices-config-data
           clone-on-start: true
           default-label: main
           # Forzar el nombre de la rama
           search-paths: '{defaultLabel}'
           # Evitar cache de repositorio
           basedir: ./config-repo-cache
+          username: ${GITHUB_USER}
+          password: ${GITHUB_TOKEN}
 
 server:
   port: 8888
