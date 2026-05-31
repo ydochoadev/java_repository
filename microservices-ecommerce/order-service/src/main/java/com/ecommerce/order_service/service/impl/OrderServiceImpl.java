@@ -5,15 +5,15 @@ import com.ecommerce.order_service.dto.OrderResponse;
 import com.ecommerce.order_service.exception.ResourceNotFoundException;
 import com.ecommerce.order_service.mapper.OrderMapper;
 import com.ecommerce.order_service.model.Order;
-import com.ecommerce.order_service.model.OrderLineItems;
 import com.ecommerce.order_service.repository.OrderRepository;
 import com.ecommerce.order_service.service.OrderService;
 import com.ecommerce.order_service.service.client.InventoryClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,15 +21,24 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@RefreshScope
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     // private final WebClient.Builder webClientBuilder;
     private final InventoryClient inventoryClient;
 
+    @Value("${order.enabled:true}")
+    private boolean ordersEnabled;
+
     @Override
     @Transactional
     public OrderResponse placeOrder(OrderRequest orderRequest) {
+        if (!ordersEnabled) {
+            log.warn("Pedido rechazado: Servicio deshabilitado por configuración");
+            throw new RuntimeException("El servicio de pedidos está en mantenimiento");
+        }
+
         log.info("Colocando nueva orden...");
         Order order = orderMapper.toOrder(orderRequest);
         for (var item : order.getOrderLineItemsList()) {
