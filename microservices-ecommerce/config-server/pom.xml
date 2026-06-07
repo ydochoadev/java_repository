@@ -29,15 +29,19 @@
 	<properties>
 		<java.version>21</java.version>
 		<spring-cloud.version>2025.1.1</spring-cloud.version>
+		<!-- 1. Define la versión corregida de Config Server -->
+		<spring-cloud-config-server.version>5.0.2</spring-cloud-config-server.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
+		<!-- 2. Añade la dependencia con la versión específica y corregida -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-config-server</artifactId>
+			<version>${spring-cloud-config-server.version}</version>
 		</dependency>
 
 		<dependency>
