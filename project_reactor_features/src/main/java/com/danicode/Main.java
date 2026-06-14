@@ -1,5 +1,6 @@
 package com.danicode;
 
+import com.danicode.pipelines.PipelineSumAllPricesInDiscount;
 import com.danicode.pipelines.PipelineTopSelling;
 import lombok.extern.java.Log;
 import reactor.core.publisher.Flux;
@@ -34,6 +35,9 @@ public class Main {
         );*/
 
         PipelineTopSelling.getTopSellingVideoGames()
+                .subscribe(System.out::println);
+
+        PipelineSumAllPricesInDiscount.getSumAllPricesInDiscount()
                 .subscribe(System.out::println);
     }
 }
