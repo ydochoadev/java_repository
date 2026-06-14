@@ -1,5 +1,6 @@
 package com.danicode;
 
+import com.danicode.pipelines.PipelineTopSelling;
 import lombok.extern.java.Log;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -8,7 +9,7 @@ import reactor.core.publisher.Mono;
 public class Main {
     public static void main(String[] args) {
         // Se publica un valor
-        Mono<String> stringMono = Mono.just("Hello World xxx")
+       /* Mono<String> stringMono = Mono.just("Hello World xxx")
                 .doOnNext(value -> log.info("[onNext]: " + value))
                 .doOnSuccess(value -> log.info("[onSuccess]: " + value))
                 .doOnError(err -> log.info("[onError]: " + err));
@@ -30,6 +31,9 @@ public class Main {
                 data -> log.info("Received data: " + data),
                 err -> log.info("Error: " + err.getMessage()),
                 () -> log.info("Complete Success")
-        );
+        );*/
+
+        PipelineTopSelling.getTopSellingVideoGames()
+                .subscribe(System.out::println);
     }
 }
