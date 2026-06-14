@@ -10,9 +10,6 @@
       <change beforePath="$PROJECT_DIR$/../microservices-ecommerce/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../microservices-ecommerce/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../microservices-ecommerce/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../microservices-ecommerce/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../microservices-ecommerce/config-data" beforeDir="false" afterPath="$PROJECT_DIR$/../microservices-ecommerce/config-data" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/danicode/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/danicode/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,7 +82,7 @@
       <option name="presentableId" value="Default" />
       <updated>1781368232622</updated>
       <workItem from="1781368235743" duration="309000" />
-      <workItem from="1781381901577" duration="4689000" />
+      <workItem from="1781381901577" duration="5086000" />
     </task>
     <servers />
   </component>
