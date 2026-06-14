@@ -8,8 +8,14 @@ public class Main {
     public static void main(String[] args) {
         // Se publica un valor
         Mono<String> stringMono = Mono.just("Hello World xxx")
-                .doOnNext(value -> log.info("[onNext]: " + value));
+                .doOnNext(value -> log.info("[onNext]: " + value))
+                .doOnSuccess(value -> log.info("[onSuccess]: " + value))
+                .doOnError(err -> log.info("[onError]: " + err));
         // Necesita un subscriptor
-        stringMono.subscribe();
+        stringMono.subscribe(
+                data -> log.info("Receiving data: " + data),
+                err -> log.info("Error: " + err.getMessage()),
+                () -> log.info("Complete Success")
+        );
     }
 }
