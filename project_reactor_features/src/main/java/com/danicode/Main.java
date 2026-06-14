@@ -1,6 +1,7 @@
 package com.danicode;
 
 import lombok.extern.java.Log;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Log
@@ -14,6 +15,19 @@ public class Main {
         // Necesita un subscriptor
         stringMono.subscribe(
                 data -> log.info("Receiving data: " + data),
+                err -> log.info("Error: " + err.getMessage()),
+                () -> log.info("Complete Success")
+        );
+
+        // Publicador Flux
+        // doOnNext => Se ejecuta varias veces
+        // doOnComplete => Solo se ejecuta 1 vez
+        Flux<String> stringFlux = Flux.just("Java", "Spring", "Reactor")
+                .doOnNext(data -> log.info("[onNext]: " + data))
+                .doOnComplete(() -> log.info("[OnComplete]: Success"));
+        // Consumidor del Flux
+        stringFlux.subscribe(
+                data -> log.info("Received data: " + data),
                 err -> log.info("Error: " + err.getMessage()),
                 () -> log.info("Complete Success")
         );
