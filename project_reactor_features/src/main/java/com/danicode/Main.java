@@ -1,5 +1,6 @@
 package com.danicode;
 
+import com.danicode.pipelines.PipelineAllComments;
 import com.danicode.pipelines.PipelineSumAllPricesInDiscount;
 import com.danicode.pipelines.PipelineTopSelling;
 import lombok.extern.java.Log;
@@ -38,6 +39,9 @@ public class Main {
                 .subscribe(System.out::println);
 
         PipelineSumAllPricesInDiscount.getSumAllPricesInDiscount()
+                .subscribe(System.out::println);
+
+        PipelineAllComments.getAllReviewsComments()
                 .subscribe(System.out::println);
     }
 }
