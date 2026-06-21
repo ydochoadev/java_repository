@@ -35,13 +35,27 @@ public class Main {
                 () -> log.info("Complete Success")
         );*/
 
-        PipelineTopSelling.getTopSellingVideoGames()
+        // Subscripciones de ejemplo
+        /*PipelineTopSelling.getTopSellingVideoGames()
                 .subscribe(System.out::println);
 
         PipelineSumAllPricesInDiscount.getSumAllPricesInDiscount()
                 .subscribe(System.out::println);
 
         PipelineAllComments.getAllReviewsComments()
-                .subscribe(System.out::println);
+                .subscribe(System.out::println);*/
+
+        // Combinación de 2 flujo con flapMap
+        Flux<String> fluxA = Flux.just("1", "2");
+        Flux<String> fluxB = Flux.just("A", "B");
+        // Tercer flux combinado
+        Flux<String> combinedFlux = fluxA.flatMap(strA -> fluxB.map(strB -> strA + " - " + strB));
+        // Subscribirse
+        combinedFlux.subscribe(System.out::println);
+        combinedFlux
+                .map(String::toLowerCase)
+                .doOnNext(System.out::println)
+                .subscribe();
+
     }
 }
