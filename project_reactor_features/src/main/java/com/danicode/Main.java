@@ -1,11 +1,9 @@
 package com.danicode;
 
-import com.danicode.pipelines.PipelineAllComments;
-import com.danicode.pipelines.PipelineSumAllPricesInDiscount;
-import com.danicode.pipelines.PipelineTopSelling;
 import lombok.extern.java.Log;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+
+import java.time.Duration;
 
 @Log
 public class Main {
@@ -45,17 +43,25 @@ public class Main {
         PipelineAllComments.getAllReviewsComments()
                 .subscribe(System.out::println);*/
 
+        log.info("****** FLAPMAP ******");
         // Combinación de 2 flujo con flapMap
-        Flux<String> fluxA = Flux.just("1", "2");
-        Flux<String> fluxB = Flux.just("A", "B");
+        Flux<String> fluxA = Flux.just("1", "2", "3").delayElements(Duration.ofMillis(100));
+        Flux<String> fluxB = Flux.just("A", "B").delayElements(Duration.ofMillis(50));
         // Tercer flux combinado
         Flux<String> combinedFlux = fluxA.flatMap(strA -> fluxB.map(strB -> strA + " - " + strB));
         // Subscribirse
-        combinedFlux.subscribe(System.out::println);
+        /*combinedFlux.subscribe(System.out::println);
         combinedFlux
                 .map(String::toLowerCase)
                 .doOnNext(System.out::println)
-                .subscribe();
+                .subscribe();*/
+
+        // Merge
+        log.info("****** CONCAT ******");
+        Flux<String> combineFlux2 = Flux.concat(fluxA, fluxB);
+        combineFlux2
+                .doOnNext(System.out::println)
+                .blockLast(); // Evita terminar la ejecución antes de procesar los flujos
 
     }
 }
