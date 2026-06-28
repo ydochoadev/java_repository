@@ -1,9 +1,9 @@
 package com.danicode;
 
 import com.danicode.error_handler.HandleDisabledVideoGame;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
-@Log
+@Slf4j
 public class Main {
     public static void main(String[] args) {
         // Se publica un valor
@@ -78,7 +78,9 @@ public class Main {
         allReportFlux.doOnNext(System.out::println).blockLast();*/
 
         log.info("****** HANDLER ******");
-        HandleDisabledVideoGame.handleDisabledVideoGameDefault().subscribe(System.out::println );
+        System.out.println("--- 1. IMPRESIÓN DIRECTA CON SYSTEM.OUT ---");
+        log.info("--- 2. IMPRESIÓN CON SLF4J LOGGER ---");
+        HandleDisabledVideoGame.handleDisabledVideoGameDefault().subscribe(v -> log.info(v.toString()));
 
     }
 }
