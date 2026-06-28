@@ -2,9 +2,6 @@ package com.danicode;
 
 import com.danicode.error_handler.HandleDisabledVideoGame;
 import lombok.extern.java.Log;
-import reactor.core.publisher.Flux;
-
-import java.time.Duration;
 
 @Log
 public class Main {
@@ -81,7 +78,7 @@ public class Main {
         allReportFlux.doOnNext(System.out::println).blockLast();*/
 
         log.info("****** HANDLER ******");
-        HandleDisabledVideoGame.handleDisabledVideoGame().subscribe(System.out::println);
+        HandleDisabledVideoGame.handleDisabledVideoGameDefault().subscribe(System.out::println );
 
     }
 }
