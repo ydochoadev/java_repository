@@ -63,5 +63,20 @@ public class Main {
                 .doOnNext(System.out::println)
                 .blockLast(); // Evita terminar la ejecución antes de procesar los flujos
 
+        log.info("****** OPERADOR ZIP ******");
+        // Envíos
+        Flux<String> fluxShipments = Flux.just("Shipment 1", "Shipment 2", "Shipment 3").delayElements(Duration.ofMillis(120));
+        // Almacén
+        Flux<String> fluxWarehouse = Flux.just("Stock 1", "Stock 2", "Stock 3").delayElements(Duration.ofMillis(50));
+        Flux<String> fluxPayments = Flux.just("Payment 1", "Payment 2", "Payment 3").delayElements(Duration.ofMillis(150));
+        Flux<String> fluxConfirms = Flux.just("Confirm 1", "Confirm 2", "Confirm  3").delayElements(Duration.ofMillis(20));
+
+        // Combina 2 flujos
+        // Flux<String> reportFlux = Flux.zip(fluxShipments, fluxWarehouse, (shipment, stock) -> shipment + " - " + stock);
+        // Combina 2 varios flujos
+        // Flx.zip(tupla1, tupla2,tupla3, tupla4)
+        Flux<String> allReportFlux = Flux.zip(fluxShipments, fluxWarehouse, fluxPayments, fluxConfirms)
+                .map(tuple -> tuple.getT1() + " - " + tuple.getT2() + " - " + tuple.getT3() + " - " + tuple.getT4());
+        allReportFlux.doOnNext(System.out::println).blockLast();
     }
 }
