@@ -103,6 +103,11 @@
 			<version>4.5.14</version>
 			<scope>compile</scope>
 		</dependency>
+		<!-- Balanceo de carga -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
 	</dependencies>
 	<!-- Agregando configuración para spring cloud -->
 	<dependencyManagement>
