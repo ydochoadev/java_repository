@@ -1,5 +1,6 @@
 package com.danicode;
 
+import com.danicode.error_handler.FallbackService;
 import com.danicode.error_handler.HandleDisabledVideoGame;
 import lombok.extern.slf4j.Slf4j;
 
@@ -77,10 +78,13 @@ public class Main {
                 .map(tuple -> tuple.getT1() + " - " + tuple.getT2() + " - " + tuple.getT3() + " - " + tuple.getT4());
         allReportFlux.doOnNext(System.out::println).blockLast();*/
 
-        log.info("****** HANDLER ******");
+        /*log.info("****** HANDLER ******");
         System.out.println("--- 1. IMPRESIÓN DIRECTA CON SYSTEM.OUT ---");
         log.info("--- 2. IMPRESIÓN CON SLF4J LOGGER ---");
-        HandleDisabledVideoGame.handleDisabledVideoGameDefault().subscribe(v -> log.info(v.toString()));
+        HandleDisabledVideoGame.handleDisabledVideoGameDefault().subscribe(v -> log.info(v.toString()));*/
+        System.out.println("FALLBACK SERVICE");
+        FallbackService.callFallback()
+                .subscribe(System.out::println);
 
     }
 }

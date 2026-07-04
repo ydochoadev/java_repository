@@ -427,7 +427,7 @@ public class Database {
     );
 
 
-    //DB For fallback :)
+    //DB For fallback: BD de respaldo
     public static Flux<Videogame> fluxFallback = Flux.just(
             Videogame.builder()
                     .name("Fallback data 1")
