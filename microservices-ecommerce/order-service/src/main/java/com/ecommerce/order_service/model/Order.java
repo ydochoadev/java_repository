@@ -30,6 +30,8 @@ public class Order {
 
     private String orderNumber;
 
+    private String userId; // para saber a quién pertenece
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) // orphanRemoval es clave para Updates
     @JoinColumn(name = "order_id") // Crea la FK en la tabla de items
     private List<OrderLineItems> orderLineItemsList;

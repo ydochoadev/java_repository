@@ -6,11 +6,14 @@ import com.ecommerce.order_service.dto.OrderResponse;
 import java.util.List;
 
 public interface OrderService {
-    OrderResponse placeOrder(OrderRequest orderRequest); // Create
+    // Se agrega userId para saber a quién pertenece el pedido para buscarlo
+    OrderResponse placeOrder(OrderRequest orderRequest, String userId); // Create
 
-    List<OrderResponse> getAllOrders();
+    // List<OrderResponse> getAllOrders();
 
     OrderResponse getOrderById(Long id);
+
+    List<OrderResponse> getOrders(String userId, boolean isAdmin);
 
     void deleteOrder(Long id);
 }

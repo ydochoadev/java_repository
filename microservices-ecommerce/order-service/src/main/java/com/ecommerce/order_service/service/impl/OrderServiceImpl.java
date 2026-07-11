@@ -33,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderResponse placeOrder(OrderRequest orderRequest) {
+    public OrderResponse placeOrder(OrderRequest orderRequest, String userId) {
         if (!ordersEnabled) {
             log.warn("Pedido rechazado: Servicio deshabilitado por configuración");
             throw new RuntimeException("El servicio de pedidos está en mantenimiento");
@@ -41,6 +41,8 @@ public class OrderServiceImpl implements OrderService {
 
         log.info("Colocando nueva orden...");
         Order order = orderMapper.toOrder(orderRequest);
+        order.setUserId(userId);
+
         for (var item : order.getOrderLineItemsList()) {
             String sku = item.getSku();
             Integer quantity = item.getQuantity();
@@ -69,13 +71,13 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toOrderResponse(savedOrder);
     }
 
-    @Override
+    /*@Override
     @Transactional(readOnly = true)
     public List<OrderResponse> getAllOrders() {
         return orderRepository.findAll().stream()
                 .map(orderMapper::toOrderResponse)
                 .toList();
-    }
+    }*/
 
     @Override
     @Transactional(readOnly = true)
@@ -83,6 +85,20 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Orden", "id", id));
         return orderMapper.toOrderResponse(order);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getOrders(String userId, boolean isAdmin) {
+        List<Order> orders;
+        if (isAdmin) {
+            orders = orderRepository.findAll();
+        } else {
+            orders = orderRepository.findByUserId(userId);
+        }
+        return orders.stream()
+                .map(orderMapper::toOrderResponse)
+                .toList();
     }
 
     @Override
