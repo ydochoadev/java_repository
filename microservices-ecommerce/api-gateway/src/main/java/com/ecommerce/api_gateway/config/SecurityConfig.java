@@ -36,7 +36,10 @@ public class SecurityConfig {
                         .pathMatchers("api/v1/inventory/**").hasRole(Role.ADMIN.name())
                         // Orders
                         .pathMatchers(HttpMethod.POST, "/api/v1/order/**").hasRole(Role.USER.name())
-                        .pathMatchers("api/v1/order/**").hasRole(Role.ADMIN.name()) // ADMIN para ver los pedidos
+                        .pathMatchers(HttpMethod.GET, "/api/v1/order/**").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
+                        .pathMatchers(HttpMethod.DELETE, "/api/v1/order/**").hasRole(Role.ADMIN.name())
+                        .pathMatchers(HttpMethod.PUT, "/api/v1/order/**").hasRole(Role.ADMIN.name())
+
                         .anyExchange().authenticated()) // cualquier otra debe autenticarse
                 // Convierte a la app en un servidor que consume tokens:
                 // Activa la guardia (valida el token que llama)
