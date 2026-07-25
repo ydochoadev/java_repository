@@ -9,6 +9,7 @@ import com.ecommerce.order_service.repository.OrderRepository;
 import com.ecommerce.order_service.service.OrderService;
 import com.ecommerce.order_service.service.client.InventoryClient;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,12 +37,14 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse fallbackMethod(OrderRequest orderRequest, String userId, Throwable throwable) {
         log.error("Circuit Breaker activado. Causa: {}", throwable.getMessage());
 
-        return new OrderResponse(0L,  "00000", Collections.emptyList());
+        // return new OrderResponse(0L,  "00000", Collections.emptyList());
+        throw new RuntimeException("El servicio de Inventario no responde. Intentar más tarde");
     }
 
     @Override
     @Transactional
     @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
+    @Retry(name = "inventory")
     public OrderResponse placeOrder(OrderRequest orderRequest, String userId) {
         if (!ordersEnabled) {
             log.warn("Pedido rechazado: Servicio deshabilitado por configuración");
