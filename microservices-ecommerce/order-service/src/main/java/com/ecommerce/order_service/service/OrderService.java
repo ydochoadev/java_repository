@@ -4,10 +4,11 @@ import com.ecommerce.order_service.dto.OrderRequest;
 import com.ecommerce.order_service.dto.OrderResponse;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface OrderService {
     // Se agrega userId para saber a quién pertenece el pedido para buscarlo
-    OrderResponse placeOrder(OrderRequest orderRequest, String userId); // Create
+    CompletableFuture<OrderResponse> placeOrder(OrderRequest orderRequest, String userId); // Create
 
     // List<OrderResponse> getAllOrders();
 
