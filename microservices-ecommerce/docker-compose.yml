@@ -64,12 +64,25 @@ services:
     depends_on:
       - keycloak-db
 
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:4.2-management  # Version
+    container_name: rabbitmq        # Nombre del contenedor (docker desktop)
+    ports:
+      - "5672:5672"   # Puerto para comunicación entre microservicios
+      - "15672:15672" # Puerto para la consola de gestión web
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq # <--- ¡La persistencia!
+
 volumes:
   mongo_data:             # Declaramos el volumen persistente para product
   inventory_data:         # Declaramos el volumen persistente para inventory
   order_data:             # Declaramos el volumen persistente para orders
-  keycloak_data:               # Declaramos el volumen persistente para la seguridad
-
+  keycloak_data:          # Declaramos el volumen persistente para la seguridad
+  rabbitmq_data:          # Declaramos el volumen persistente para rabbitMQ
 
 #  # 2. Nuestra Aplicación (Product Service)
 #  product-service:
