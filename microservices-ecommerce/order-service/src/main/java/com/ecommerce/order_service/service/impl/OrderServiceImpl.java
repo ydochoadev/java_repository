@@ -2,16 +2,15 @@ package com.ecommerce.order_service.service.impl;
 
 import com.ecommerce.order_service.dto.OrderRequest;
 import com.ecommerce.order_service.dto.OrderResponse;
+import com.ecommerce.order_service.event.OrderPlaceEvent;
 import com.ecommerce.order_service.exception.ResourceNotFoundException;
 import com.ecommerce.order_service.mapper.OrderMapper;
 import com.ecommerce.order_service.model.Order;
 import com.ecommerce.order_service.repository.OrderRepository;
 import com.ecommerce.order_service.service.OrderService;
-import com.ecommerce.order_service.service.client.InventoryClient;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +27,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     // private final WebClient.Builder webClientBuilder;
-    private final InventoryClient inventoryClient;
+    // private final InventoryClient inventoryClient; ya no se usará inventory por http
+    private final RabbitTemplate rabbitTemplate;
 
     @Value("${order.enabled:true}")
     private boolean ordersEnabled;
@@ -43,8 +42,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
-    @Retry(name = "inventory")
+    /* @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
+    @Retry(name = "inventory") */
     public OrderResponse placeOrder(OrderRequest orderRequest, String userId) {
         if (!ordersEnabled) {
             log.warn("Pedido rechazado: Servicio deshabilitado por configuración");
@@ -55,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderMapper.toOrder(orderRequest);
         order.setUserId(userId);
 
-        for (var item : order.getOrderLineItemsList()) {
+        /*for (var item : order.getOrderLineItemsList()) {
             String sku = item.getSku();
             Integer quantity = item.getQuantity();
             // Realizar la llamada a inventory
@@ -65,12 +64,21 @@ public class OrderServiceImpl implements OrderService {
                 log.error("Error al reducir stock del producto {}. {}", sku, e.getMessage());
                 throw new IllegalArgumentException("No se pudo procesa la orden: Stock insuficiente o error de inventario");
             }
-        }
+        }*/
 
         order.setOrderNumber(UUID.randomUUID().toString());
         // Guardamos y capturamos la entidad persistida
         Order savedOrder = orderRepository.save(order);
         log.info("Orden guardada con éxito. ID: {}", savedOrder.getId());
+        // Contrato
+        List<OrderPlaceEvent.OrderItemEvent> orderItems = order.getOrderLineItemsList()
+                .stream()
+                .map(item -> new OrderPlaceEvent.OrderItemEvent(
+                        item.getSku(), item.getPrice().toString(), item.getQuantity()
+                )).toList();
+        OrderPlaceEvent event = new OrderPlaceEvent(savedOrder.getOrderNumber(), orderRequest.getEmail(), orderItems);
+        rabbitTemplate.convertAndSend("order-events", "order.placed", event);
+        log.info("Evento enviado a RabbitMQ para la orden: {}", savedOrder.getOrderNumber());
 
         return orderMapper.toOrderResponse(savedOrder);
     }
