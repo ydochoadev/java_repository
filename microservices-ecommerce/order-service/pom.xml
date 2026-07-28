@@ -115,6 +115,11 @@
 			<version>4.5.14</version>
 			<scope>compile</scope>
 		</dependency>
+		<!-- Convertir en json los bytes de los mensajes RabbitMQ -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
+		</dependency>
 		<!-- Balanceo de carga -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
