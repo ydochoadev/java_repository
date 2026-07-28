@@ -65,6 +65,11 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
             <scope>compile</scope>
         </dependency>
+        <!-- Convertir en json los bytes de los mensajes RabbitMQ -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
         <!-- Agregando dependencia eureka-client -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
