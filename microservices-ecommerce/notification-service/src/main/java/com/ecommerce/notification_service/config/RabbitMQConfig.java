@@ -7,7 +7,9 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class RabbitMQConfig {
     /* Bean para convertir la serialización java a Jackson
     para convertir los mensajes a json */
@@ -17,7 +19,7 @@ public class RabbitMQConfig {
     }
 
     // Cola: Donde se almacenan los mensajes esperando ser leídos
-    @Bean
+    @Bean(name = "notificationQueueBean")
     public Queue notificationQueue() {
         // duration: SI RabbitMQ se reinicia, la cola sobrevive
         return new Queue("notification-queue", true);
