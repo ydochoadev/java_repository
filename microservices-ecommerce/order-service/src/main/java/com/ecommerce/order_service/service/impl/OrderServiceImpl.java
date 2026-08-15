@@ -6,6 +6,7 @@ import com.ecommerce.order_service.event.OrderPlaceEvent;
 import com.ecommerce.order_service.exception.ResourceNotFoundException;
 import com.ecommerce.order_service.mapper.OrderMapper;
 import com.ecommerce.order_service.model.Order;
+import com.ecommerce.order_service.model.OrderStatus;
 import com.ecommerce.order_service.repository.OrderRepository;
 import com.ecommerce.order_service.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -67,6 +68,8 @@ public class OrderServiceImpl implements OrderService {
         }*/
 
         order.setOrderNumber(UUID.randomUUID().toString());
+        // Estado del pedido
+        order.setStatus(OrderStatus.PLACED);
         // Guardamos y capturamos la entidad persistida
         Order savedOrder = orderRepository.save(order);
         log.info("Orden guardada con éxito. ID: {}", savedOrder.getId());
