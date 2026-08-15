@@ -1,13 +1,6 @@
 package com.ecommerce.order_service.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,6 +24,9 @@ public class Order {
     private String orderNumber;
 
     private String userId; // para saber a quién pertenece
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) // orphanRemoval es clave para Updates
     @JoinColumn(name = "order_id") // Crea la FK en la tabla de items
