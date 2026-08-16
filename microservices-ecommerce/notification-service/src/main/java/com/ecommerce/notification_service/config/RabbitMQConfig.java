@@ -32,9 +32,14 @@ public class RabbitMQConfig {
     }
 
     // Bean que une: Conecta el exchange con la cola:
-    // Si llega un msj con la etiqueta 'order.placed', envía una copia a la cola inventory-queue
+    // Si llega un msj con la etiqueta 'order.confirmed', envía una copia a la cola notification-queue
     @Bean
     public Binding binding(Queue notificationQueue, TopicExchange orderEventsExchange) {
         return BindingBuilder.bind(notificationQueue).to(orderEventsExchange).with("order.confirmed");
+    }
+
+    @Bean
+    public Binding cancelledBinding(Queue notificationQueue, TopicExchange orderEventsExchange) {
+        return BindingBuilder.bind(notificationQueue).to(orderEventsExchange).with("order.cancelled");
     }
 }

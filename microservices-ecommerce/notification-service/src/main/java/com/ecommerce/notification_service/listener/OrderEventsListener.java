@@ -1,6 +1,7 @@
 package com.ecommerce.notification_service.listener;
 
-import com.ecommerce.notification_service.event.OrderPlaceEvent;
+import com.ecommerce.notification_service.event.OrderCancelledEvent;
+import com.ecommerce.notification_service.event.OrderConfirmedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -17,7 +18,7 @@ public class OrderEventsListener {
 
     // @RabbitListener: Hace que springboot arranque un proceso en 2° plano (hilo) con una conexión a RabbiTMQ
     @RabbitListener(queues = "notification-queue")
-    public void handleOrderConfirmedEvent(OrderPlaceEvent event) {
+    public void handleOrderConfirmedEvent(OrderConfirmedEvent event) {
         log.info("Pedido confirmado para la orden: {}", event.orderNumber());
         try {
             log.info("Enviando correo de confirmación a : {}", event.email());
@@ -35,5 +36,25 @@ public class OrderEventsListener {
             log.error("Error al enviar correo: {}", e.getMessage());
         }
 
+    }
+
+    @RabbitListener(queues = "notification-queue")
+    public void handleOrderCancelledEvent(OrderCancelledEvent event) {
+        log.info("Pedido confirmado para la orden: {}", event.orderNumber());
+        try {
+            log.info("Enviando correo de cancelación de la orden {} a {}", event.orderNumber(), event.email());
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("pedidos@ecommerce.com");
+            message.setTo(event.email());
+            message.setSubject("Actualización de tu pedido - " + event.orderNumber());
+            message.setText(" Hola! \n\n" +
+                    "Lamentamos informarte que tu pedido ha sido cancelado. \n\n" + "Motivo: " + event.reason() + "\n" +
+                    "Si se realizó algún cargo, será reembolsado a la brevedad.");
+            mailSender.send(message);
+
+            log.info("Correo enviando exitosamente para la orden {}", event.orderNumber());
+        } catch (Exception e) {
+            log.error("Error al enviar correo: {}", e.getMessage());
+        }
     }
 }
