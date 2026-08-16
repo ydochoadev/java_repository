@@ -20,41 +20,33 @@ public class OrderEventsListener {
     @RabbitListener(queues = "notification-queue")
     public void handleOrderConfirmedEvent(OrderConfirmedEvent event) {
         log.info("Pedido confirmado para la orden: {}", event.orderNumber());
-        try {
-            log.info("Enviando correo de confirmación a : {}", event.email());
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom("pedidos@ecommerce.com");
-            message.setTo(event.email());
-            message.setSubject("Orden Confirmada - " + event.orderNumber());
-            message.setText(" Hola! \n\n" +
-                    "Tu pedido con número " + event.orderNumber() + " ha sidorecibido exitosamente. \n" +
-                    "Gracias por comprar con nosortros");
-            mailSender.send(message);
+        log.info("Enviando correo de confirmación a : {}", event.email());
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("pedidos@ecommerce.com");
+        message.setTo(event.email());
+        message.setSubject("Orden Confirmada - " + event.orderNumber());
+        message.setText(" Hola! \n\n" +
+                "Tu pedido con número " + event.orderNumber() + " ha sidorecibido exitosamente. \n" +
+                "Gracias por comprar con nosortros");
+        mailSender.send(message);
 
-            log.info("Correo enviando exitosamente para la orden {}", event.orderNumber());
-        } catch (Exception e) {
-            log.error("Error al enviar correo: {}", e.getMessage());
-        }
-
+        log.info("Correo enviando exitosamente para la orden {}", event.orderNumber());
     }
 
     @RabbitListener(queues = "notification-queue")
     public void handleOrderCancelledEvent(OrderCancelledEvent event) {
         log.info("Pedido confirmado para la orden: {}", event.orderNumber());
-        try {
-            log.info("Enviando correo de cancelación de la orden {} a {}", event.orderNumber(), event.email());
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom("pedidos@ecommerce.com");
-            message.setTo(event.email());
-            message.setSubject("Actualización de tu pedido - " + event.orderNumber());
-            message.setText(" Hola! \n\n" +
-                    "Lamentamos informarte que tu pedido ha sido cancelado. \n\n" + "Motivo: " + event.reason() + "\n" +
-                    "Si se realizó algún cargo, será reembolsado a la brevedad.");
-            mailSender.send(message);
 
-            log.info("Correo enviando exitosamente para la orden {}", event.orderNumber());
-        } catch (Exception e) {
-            log.error("Error al enviar correo: {}", e.getMessage());
-        }
+        log.info("Enviando correo de cancelación de la orden {} a {}", event.orderNumber(), event.email());
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("pedidos@ecommerce.com");
+        message.setTo(event.email());
+        message.setSubject("Actualización de tu pedido - " + event.orderNumber());
+        message.setText(" Hola! \n\n" +
+                "Lamentamos informarte que tu pedido ha sido cancelado. \n\n" + "Motivo: " + event.reason() + "\n" +
+                "Si se realizó algún cargo, será reembolsado a la brevedad.");
+        mailSender.send(message);
+
+        log.info("Correo enviando exitosamente para la orden {}", event.orderNumber());
     }
 }
