@@ -35,6 +35,6 @@ public class RabbitMQConfig {
     // Si llega un msj con la etiqueta 'order.placed', envía una copia a la cola inventory-queue
     @Bean
     public Binding binding(Queue notificationQueue, TopicExchange orderEventsExchange) {
-        return BindingBuilder.bind(notificationQueue).to(orderEventsExchange).with("order.placed");
+        return BindingBuilder.bind(notificationQueue).to(orderEventsExchange).with("order.confirmed");
     }
 }

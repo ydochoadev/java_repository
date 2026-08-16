@@ -17,8 +17,8 @@ public class OrderEventsListener {
 
     // @RabbitListener: Hace que springboot arranque un proceso en 2° plano (hilo) con una conexión a RabbiTMQ
     @RabbitListener(queues = "notification-queue")
-    public void handleOrderPlaceEvent(OrderPlaceEvent event) {
-        log.info("Evento recibido en Inventario para la orden: {}", event.orderNumber());
+    public void handleOrderConfirmedEvent(OrderPlaceEvent event) {
+        log.info("Pedido confirmado para la orden: {}", event.orderNumber());
         try {
             log.info("Enviando correo de confirmación a : {}", event.email());
             SimpleMailMessage message = new SimpleMailMessage();
