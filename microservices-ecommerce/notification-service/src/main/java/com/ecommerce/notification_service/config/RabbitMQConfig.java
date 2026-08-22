@@ -1,9 +1,6 @@
 package com.ecommerce.notification_service.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -22,13 +19,28 @@ public class RabbitMQConfig {
     @Bean(name = "notificationQueueBean")
     public Queue notificationQueue() {
         // duration: SI RabbitMQ se reinicia, la cola sobrevive
-        return new Queue("notification-queue", true);
+        return QueueBuilder.durable("notification-queue")
+                .withArgument("x-dead-letter-exchange", "notification-dlx")
+                .withArgument("x-dead-letter-routing-key", "notification.dead")
+                .build();
     }
 
     // Distribuidor: Recibe el mensaje y decide a dónde lo almacena
     @Bean
     public TopicExchange orderEventsExchange() {
         return new TopicExchange("order-events");
+    }
+
+    // Para las notificaciones fallidas: DirectExchange (canal exclusivo)
+    @Bean
+    public DirectExchange deadLetterExchange() {
+        return new DirectExchange("notification-dlx");
+    }
+
+    // Cola para las notificaciones fallidas
+    @Bean(name = "notificationQueueBean")
+    public Queue deadLetterQueue() {
+        return new Queue("notification-dlq", true);
     }
 
     // Bean que une: Conecta el exchange con la cola:
@@ -41,5 +53,11 @@ public class RabbitMQConfig {
     @Bean
     public Binding cancelledBinding(Queue notificationQueue, TopicExchange orderEventsExchange) {
         return BindingBuilder.bind(notificationQueue).to(orderEventsExchange).with("order.cancelled");
+    }
+
+    // Binding para las notificaciones fallidas
+    @Bean
+    public Binding deadLetterBinding(Queue deadLetterQueue, DirectExchange deadLetterExchange) {
+        return BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with("notification.dead");
     }
 }
