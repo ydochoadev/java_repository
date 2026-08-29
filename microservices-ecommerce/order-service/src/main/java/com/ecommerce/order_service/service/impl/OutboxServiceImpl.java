@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -34,5 +35,19 @@ public class OutboxServiceImpl implements OutboxService {
         outboxRepository.save(outboxEvent);
 
         log.info("Evento asegurado en Outbox: {}", event.orderNumber());
+    }
+
+    @Override
+    public List<OutboxEvent> getPendingOutboxEvents() {
+        return outboxRepository.findByProcessedFalse();
+    }
+
+    @Override
+    public void markAsProcessed(Long id) {
+        outboxRepository.findById(id).ifPresent(outboxEvent -> {
+            outboxEvent.setProcessed(true);
+            outboxRepository.save(outboxEvent);
+            log.info("Evento {} marcado como procesado", id);
+        });
     }
 }
