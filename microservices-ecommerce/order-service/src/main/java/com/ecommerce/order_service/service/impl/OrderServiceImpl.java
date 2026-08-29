@@ -9,8 +9,10 @@ import com.ecommerce.order_service.model.Order;
 import com.ecommerce.order_service.model.OrderStatus;
 import com.ecommerce.order_service.repository.OrderRepository;
 import com.ecommerce.order_service.service.OrderService;
+import com.ecommerce.order_service.service.OutboxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -30,6 +32,7 @@ public class OrderServiceImpl implements OrderService {
     // private final WebClient.Builder webClientBuilder;
     // private final InventoryClient inventoryClient; ya no se usará inventory por http
     private final RabbitTemplate rabbitTemplate;
+    private final OutboxService outboxService;
 
     @Value("${order.enabled:true}")
     private boolean ordersEnabled;
@@ -53,20 +56,6 @@ public class OrderServiceImpl implements OrderService {
 
         log.info("Colocando nueva orden...");
         Order order = orderMapper.toOrder(orderRequest);
-        order.setUserId(userId);
-
-        /*for (var item : order.getOrderLineItemsList()) {
-            String sku = item.getSku();
-            Integer quantity = item.getQuantity();
-            // Realizar la llamada a inventory
-            try {
-                inventoryClient.reduceStock(sku, quantity);
-            } catch (Exception e) {
-                log.error("Error al reducir stock del producto {}. {}", sku, e.getMessage());
-                throw new IllegalArgumentException("No se pudo procesa la orden: Stock insuficiente o error de inventario");
-            }
-        }*/
-
         order.setOrderNumber(UUID.randomUUID().toString());
         // Estado del pedido
         order.setStatus(OrderStatus.PLACED);
@@ -79,8 +68,18 @@ public class OrderServiceImpl implements OrderService {
                 .map(item -> new OrderPlaceEvent.OrderItemEvent(
                         item.getSku(), item.getPrice().toString(), item.getQuantity()
                 )).toList();
+        // RabbitMQ
         OrderPlaceEvent event = new OrderPlaceEvent(savedOrder.getOrderNumber(), orderRequest.getEmail(), orderItems);
-        rabbitTemplate.convertAndSend("order-events", "order.placed", event);
+        boolean sendToRabbitMQ = false;
+        try {
+            rabbitTemplate.convertAndSend("order-events", "order.placed", event);
+            sendToRabbitMQ = true;
+            log.info("Mensaje enviado inmediatamente a RabbitMQ: {}", savedOrder.getOrderNumber());
+        } catch (AmqpException e) {
+            log.error("RabbitMQ caído. El outbox asegurará el envío posterior para la orden: {}", savedOrder.getOrderNumber());
+        }
+        // Outbox
+        outboxService.saveOrderPlaceEvent(event, sendToRabbitMQ);
         log.info("Evento enviado a RabbitMQ para la orden: {}", savedOrder.getOrderNumber());
 
         return orderMapper.toOrderResponse(savedOrder);
