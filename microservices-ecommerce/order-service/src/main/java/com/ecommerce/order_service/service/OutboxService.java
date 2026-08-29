@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface OutboxService {
     // Se busca solo los eventos que aún no han sido enviados exitosamente
-    void saveOrderPlaceEvent(OrderPlaceEvent event);
+    void saveOrderPlaceEvent(OrderPlaceEvent event, boolean isProcessed);
 }
