@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <!-- Procesador, entre los logs de springboot y opentelemetry -->
+    <appender name="OTEL" class="io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender"/>
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/> <!--por default en springboot, manda el mensaje directo a intelliJ-->
+        <appender-ref ref="OTEL"/> <!-- personal -->
+    </root>
+</configuration>
