@@ -77,6 +77,16 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq # <--- ¡La persistencia!
 
+  # Stack Grafana para los logs, trazas y métricas
+  grafana-lgtm:
+    image: 'grafana/otel-lgtm:latest'
+    ports:
+      - '3000:3000' # ventana visual, navegador, interfaz de grafana
+      - '4317:4317' # Grpc, puerto en alto rendimiento en producción
+      - '4318:4318' # Http
+    environment:
+      - OTEL_METRIC_EXPORT_INTERVAL=5000  # métricas se envían a grafana cada 5s
+
 volumes:
   mongo_data:             # Declaramos el volumen persistente para product
   inventory_data:         # Declaramos el volumen persistente para inventory
