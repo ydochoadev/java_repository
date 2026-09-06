@@ -1,7 +1,7 @@
-package com.atlas.bank.atlas.service;
+package com.atlas.bank.atlas.account.service;
 
-import com.atlas.bank.atlas.model.Account;
-import com.atlas.bank.atlas.repository.AccountRepository;
+import com.atlas.bank.atlas.account.model.Account;
+import com.atlas.bank.atlas.account.repoditory.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

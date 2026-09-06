@@ -1,6 +1,6 @@
-package com.atlas.bank.atlas.service;
+package com.atlas.bank.atlas.transaction.service;
 
-import com.atlas.bank.atlas.model.Transaction;
+import com.atlas.bank.atlas.transaction.model.Transaction;
 
 import java.math.BigDecimal;
 

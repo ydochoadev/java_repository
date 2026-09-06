@@ -1,10 +1,10 @@
-package com.atlas.bank.atlas.service;
+package com.atlas.bank.atlas.transaction.service;
 
-import com.atlas.bank.atlas.model.Account;
-import com.atlas.bank.atlas.model.Transaction;
-import com.atlas.bank.atlas.repository.AccountRepository;
-import com.atlas.bank.atlas.repository.TransactionRepository;
-import com.atlas.bank.atlas.service.fee.FeeCalculator;
+import com.atlas.bank.atlas.account.model.Account;
+import com.atlas.bank.atlas.transaction.model.Transaction;
+import com.atlas.bank.atlas.account.repoditory.AccountRepository;
+import com.atlas.bank.atlas.transaction.repository.TransactionRepository;
+import com.atlas.bank.atlas.transaction.service.fee.FeeCalculator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

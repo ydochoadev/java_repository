@@ -1,6 +1,6 @@
-package com.atlas.bank.atlas.repository;
+package com.atlas.bank.atlas.transaction.repository;
 
-import com.atlas.bank.atlas.model.Transaction;
+import com.atlas.bank.atlas.transaction.model.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
