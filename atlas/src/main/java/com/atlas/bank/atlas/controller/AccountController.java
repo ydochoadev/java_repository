@@ -2,9 +2,9 @@ package com.atlas.bank.atlas.controller;
 
 import com.atlas.bank.atlas.model.Account;
 import com.atlas.bank.atlas.model.Transaction;
-import com.atlas.bank.atlas.service.AccountService;
-import com.atlas.bank.atlas.service.TransactionQueryService;
-import com.atlas.bank.atlas.service.TransferService;
+import com.atlas.bank.atlas.service.IAccountService;
+import com.atlas.bank.atlas.service.ITransactionQueryService;
+import com.atlas.bank.atlas.service.ITransferService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +24,9 @@ import java.util.List;
 @AllArgsConstructor
 public class AccountController {
 
-    private final AccountService accountService;
-    private final TransferService transferService;
-    private final TransactionQueryService transactionQueryService;
+    private final IAccountService accountService;
+    private final ITransferService transferService;
+    private final ITransactionQueryService transactionQueryService;
 
     @PostMapping
     public ResponseEntity<Account> create(@RequestBody Account account) {
