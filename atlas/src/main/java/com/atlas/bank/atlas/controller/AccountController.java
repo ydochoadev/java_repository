@@ -3,6 +3,8 @@ package com.atlas.bank.atlas.controller;
 import com.atlas.bank.atlas.model.Account;
 import com.atlas.bank.atlas.model.Transaction;
 import com.atlas.bank.atlas.service.AccountService;
+import com.atlas.bank.atlas.service.TransactionQueryService;
+import com.atlas.bank.atlas.service.TransferService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,8 @@ import java.util.List;
 public class AccountController {
 
     private final AccountService accountService;
+    private final TransferService transferService;
+    private final TransactionQueryService transactionQueryService;
 
     @PostMapping
     public ResponseEntity<Account> create(@RequestBody Account account) {
@@ -43,12 +47,12 @@ public class AccountController {
     public ResponseEntity<Transaction> transfer(@RequestParam Long fromId,
                                                 @RequestParam Long toId,
                                                 @RequestParam BigDecimal amount) {
-        return ResponseEntity.ok(accountService.transfer(fromId, toId, amount));
+        return ResponseEntity.ok(transferService.execute(fromId, toId, amount));
 
     }
 
     @GetMapping("/{id}/transactions")
     public ResponseEntity<List<Transaction>> getTransactions(@PathVariable Long id) {
-        return ResponseEntity.ok(accountService.getTransactions(id));
+        return ResponseEntity.ok(transactionQueryService.getByAccountId(id));
     }
 }
