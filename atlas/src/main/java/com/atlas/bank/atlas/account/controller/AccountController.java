@@ -1,5 +1,6 @@
 package com.atlas.bank.atlas.account.controller;
 
+import com.atlas.bank.atlas.account.dto.AccountMapper;
 import com.atlas.bank.atlas.account.dto.AccountResponse;
 import com.atlas.bank.atlas.account.dto.CreateAccountRequest;
 import com.atlas.bank.atlas.account.model.Account;
@@ -22,25 +23,21 @@ import java.util.List;
 public class AccountController {
 
     private final IAccountService accountService;
+    private final AccountMapper accountMapper;
 
     @PostMapping
     public ResponseEntity<AccountResponse> create(@RequestBody CreateAccountRequest request) {
-        Account account = new Account();
-        account.setAccountNumber(request.getAccountNumber());
-        account.setOwnerName(request.getOwnerName());
-        account.setEmail(request.getEmail());
-        account.setType(request.getType());
-        account.setBalance(request.getBalance());
+        Account account = this.accountMapper.toEntity(request);
 
         Account accountCreated = accountService.create(account);
-        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(accountCreated));
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.accountMapper.toResponse(accountCreated));
     }
 
     @GetMapping
     public ResponseEntity<List<AccountResponse>> findAll() {
         List<AccountResponse> accountResponses = accountService.findAll()
                 .stream()
-                .map(this::toResponse)
+                .map(this.accountMapper::toResponse)
                 .toList();
 
         return ResponseEntity.ok(accountResponses);
@@ -48,20 +45,6 @@ public class AccountController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AccountResponse> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(toResponse(accountService.findById(id)));
-    }
-
-    private AccountResponse toResponse(Account account) {
-        AccountResponse response = new AccountResponse();
-        response.setId(account.getId());
-        response.setAccountNumber(account.getAccountNumber());
-        response.setOwnerName(account.getOwnerName());
-        response.setEmail(account.getEmail());
-        response.setType(account.getType());
-        response.setBalance(account.getBalance());
-        response.setStatus(account.getStatus());
-        response.setCreatedAt(account.getCreatedAt());
-
-        return response;
+        return ResponseEntity.ok(this.accountMapper.toResponse(this.accountService.findById(id)));
     }
 }
