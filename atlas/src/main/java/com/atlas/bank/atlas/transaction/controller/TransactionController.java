@@ -6,6 +6,7 @@ import com.atlas.bank.atlas.transaction.dto.TransactionResponse;
 import com.atlas.bank.atlas.transaction.model.Transaction;
 import com.atlas.bank.atlas.transaction.service.ITransactionQueryService;
 import com.atlas.bank.atlas.transaction.service.ITransferService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,7 @@ public class TransactionController {
     private final TransactionMapper transactionMapper;
 
     @PostMapping("/transfer")
-    public ResponseEntity<TransactionResponse> transfer(@RequestBody TransferRequest request) {
+    public ResponseEntity<TransactionResponse> transfer(@Valid @RequestBody TransferRequest request) {
         Transaction transaction = transferService.execute(
                 request.getFromAccountId(),
                 request.getToAccountId(),

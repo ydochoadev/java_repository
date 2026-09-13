@@ -5,6 +5,7 @@ import com.atlas.bank.atlas.account.dto.AccountResponse;
 import com.atlas.bank.atlas.account.dto.CreateAccountRequest;
 import com.atlas.bank.atlas.account.model.Account;
 import com.atlas.bank.atlas.account.service.IAccountService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class AccountController {
     private final AccountMapper accountMapper;
 
     @PostMapping
-    public ResponseEntity<AccountResponse> create(@RequestBody CreateAccountRequest request) {
+    public ResponseEntity<AccountResponse> create(@Valid @RequestBody CreateAccountRequest request) {
         Account account = this.accountMapper.toEntity(request);
 
         Account accountCreated = accountService.create(account);
