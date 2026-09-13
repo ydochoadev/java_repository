@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.ArrayList;
 import java.util.List;
 
 // @RestControllerAdvice => Clase que captura las excepciones del sistema de forma centralizada
@@ -64,10 +65,14 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setTitle("Error de validación");
-        List<String> errors = ex.getBindingResult().getFieldErrors()
-                .stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .toList();
+        // Errores de campos
+        List<String> errors = new ArrayList<>();
+        ex.getBindingResult().getFieldErrors()
+                .forEach(error -> errors.add(error.getField() + ": " + error.getDefaultMessage()));
+        // Errores globales
+        ex.getBindingResult().getGlobalErrors()
+                .forEach(error -> errors.add(error.getDefaultMessage()));
+
         problemDetail.setProperty("errors", errors);
 
         return problemDetail;

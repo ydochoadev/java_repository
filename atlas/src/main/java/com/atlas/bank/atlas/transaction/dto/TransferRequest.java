@@ -1,5 +1,6 @@
 package com.atlas.bank.atlas.transaction.dto;
 
+import com.atlas.bank.atlas.transaction.validation.DifferentAccount;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
+@DifferentAccount
 public class TransferRequest {
 
     @NotNull(message = "La cuenta de origen es obligatoria")
