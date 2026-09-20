@@ -1,7 +1,6 @@
-package com.atlas.bank.atlas.transaction.service;
+package com.atlas.bank.atlas.transaction.service.transfer;
 
 import com.atlas.bank.atlas.account.model.Account;
-import org.springframework.transaction.reactive.TransactionContext;
 
 import java.math.BigDecimal;
 
