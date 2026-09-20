@@ -12,7 +12,7 @@ public abstract class TransactionProcessor<C> {
 
     // Inyecta el repo porque en cada operación (retiro, trx, depósito) necesita la BD
     // Para no colocarlo en cada servicio
-    private final TransactionRepository transactionRepository;
+    protected final TransactionRepository transactionRepository;
 
     @Transactional
     public Transaction process(C context) {
