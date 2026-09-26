@@ -1,5 +1,6 @@
 package com.atlas.bank.atlas.transaction.service.fee;
 
+import com.atlas.bank.atlas.account.model.AccountType;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,7 @@ public class SavingsFeeCalculator implements FeeCalculator {
     }
 
     @Override
-    public boolean supports(String accountType) {
-        return "SAVINGS".equalsIgnoreCase(accountType);
+    public boolean supports(AccountType accountType) {
+        return accountType == AccountType.PREMIUM;
     }
 }
