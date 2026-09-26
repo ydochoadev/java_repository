@@ -17,6 +17,4 @@ public class DashboardResponse {
     private BigDecimal balance;
     private String status;
     List<TransactionResponse> recentTransactions;
-    private boolean fraudBlocked;
-    private String fraudReason;
 }
