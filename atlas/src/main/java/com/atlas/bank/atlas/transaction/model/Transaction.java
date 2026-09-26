@@ -2,6 +2,8 @@ package com.atlas.bank.atlas.transaction.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,7 +30,8 @@ public class Transaction {
     private Long id;
 
     @Column(nullable = false, length = 20)
-    private String type; // DEPOSIT, WITHDRAWAL, TRANSFER
+    @Enumerated(EnumType.STRING)
+    private TransactionType type; // DEPOSIT, WITHDRAWAL, TRANSFER
 
     @Column(name = "source_account_id")
     private Long sourceAccountId;
@@ -43,14 +46,15 @@ public class Transaction {
     private BigDecimal fee;
 
     @Column(nullable = false, length = 20)
-    private String status; // PENDING, EXECUTED, REJECTED
+    @Enumerated(EnumType.STRING)
+    private TransactionStatus status; // PENDING, EXECUTED, REJECTED
 
-    @Column(name = "create_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
-        if (this.status == null) this.status = "EXECUTED";
+        if (this.status == null) this.status = TransactionStatus.EXECUTED;
     }
 }
