@@ -2,18 +2,13 @@ package com.atlas.bank.atlas.transaction.service.transfer;
 
 import com.atlas.bank.atlas.account.exeption.AccountNotFoundException;
 import com.atlas.bank.atlas.account.model.Account;
-import com.atlas.bank.atlas.account.model.AccountStatus;
-import com.atlas.bank.atlas.transaction.exeption.AccountNotActiveException;
-import com.atlas.bank.atlas.transaction.exeption.InsufficientFundsException;
 import com.atlas.bank.atlas.transaction.model.Transaction;
 import com.atlas.bank.atlas.account.repoditory.AccountRepository;
 import com.atlas.bank.atlas.transaction.repository.TransactionRepository;
 import com.atlas.bank.atlas.transaction.service.event.TransactionExecutedEvent;
-import com.atlas.bank.atlas.transaction.service.exception.FraudCheckException;
 import com.atlas.bank.atlas.transaction.service.factory.TransactionFactory;
 import com.atlas.bank.atlas.transaction.service.fee.FeeCalculator;
-import com.atlas.bank.atlas.transaction.service.fraud.FraudCheckResult;
-import com.atlas.bank.atlas.transaction.service.fraud.FraudChecker;
+import com.atlas.bank.atlas.transaction.validation.chain.TransferValidator;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,18 +22,18 @@ public class TransferService extends TransactionProcessor<TransferContext> imple
     private final AccountRepository accountRepository;
     private final List<FeeCalculator> feeCalculators; // Se tiene TODA las implementaciones
     private final ApplicationEventPublisher eventPublisher;
-    private final FraudChecker fraudChecker;
+    private final List<TransferValidator> validators;
 
     public TransferService(TransactionRepository transactionRepository,
                            AccountRepository accountRepository,
                            List<FeeCalculator> feeCalculators,
                            ApplicationEventPublisher eventPublisher,
-                           FraudChecker fraudChecker) {
+                           List<TransferValidator> validators) {
         super(transactionRepository);
         this.accountRepository = accountRepository;
         this.feeCalculators = feeCalculators;
         this.eventPublisher = eventPublisher;
-        this.fraudChecker = fraudChecker;
+        this.validators = validators;
     }
 
     @Override
@@ -66,23 +61,8 @@ public class TransferService extends TransactionProcessor<TransferContext> imple
 
     @Override
     protected void validate(TransferContext context) {
-        // Validar que la cuenta esté activa
-        if (context.from().getStatus() != AccountStatus.ACTIVE) {
-            throw new AccountNotActiveException(context.from().getId(), context.from().getStatus().name());
-        }
-        if (context.to().getStatus() != AccountStatus.ACTIVE) {
-            throw new AccountNotActiveException(context.to().getId(), context.to().getStatus().name());
-        }
-
-        // Validar fondos
-        if (context.from().getBalance().compareTo(context.amount()) < 0) {
-            throw new InsufficientFundsException(context.from().getId(), context.from().getBalance(), context.amount());
-        }
-
-        FraudCheckResult fraudCheckResult = fraudChecker.check(context.from().getId(), context.amount());
-        if (fraudCheckResult.blocked()) {
-            throw new FraudCheckException(fraudCheckResult.reason());
-        }
+        // Validar que la cuenta esté activa. Fondos. Y fraude
+        validators.forEach(validator -> validator.validate(context));
     }
 
     @Override
