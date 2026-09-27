@@ -7,4 +7,9 @@ public record ExecutedState() implements TransactionState {
     public TransactionStatus status() {
         return TransactionStatus.EXECUTED;
     }
+
+    @Override
+    public TransactionState reverse() {
+        return new ReversedState();
+    }
 }

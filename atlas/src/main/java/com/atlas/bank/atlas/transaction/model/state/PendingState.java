@@ -7,4 +7,14 @@ public record PendingState() implements TransactionState {
     public TransactionStatus status() {
         return TransactionStatus.PENDING;
     }
+
+    @Override
+    public TransactionState validate() {
+        return new ValidatedState();
+    }
+
+    @Override
+    public TransactionState reverse() {
+        return new RejectedState();
+    }
 }
