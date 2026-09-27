@@ -10,6 +10,7 @@ import java.util.List;
 
 @Slf4j
 @Component
+@Primary
 public class AuditableAccountService implements IAccountService {
 
     private final IAccountService delegate;
