@@ -1,6 +1,11 @@
 package com.atlas.bank.atlas.transaction.model;
 
-import com.atlas.bank.atlas.transaction.model.state.*;
+import com.atlas.bank.atlas.transaction.model.state.ExecutedState;
+import com.atlas.bank.atlas.transaction.model.state.PendingState;
+import com.atlas.bank.atlas.transaction.model.state.RejectedState;
+import com.atlas.bank.atlas.transaction.model.state.ReversedState;
+import com.atlas.bank.atlas.transaction.model.state.TransactionState;
+import com.atlas.bank.atlas.transaction.model.state.ValidatedState;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -13,6 +18,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,10 +33,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(nullable = false, length = 20)
