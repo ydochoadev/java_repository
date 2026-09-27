@@ -3,6 +3,7 @@ package com.atlas.bank.atlas.transaction.service.factory;
 import com.atlas.bank.atlas.transaction.model.Transaction;
 import com.atlas.bank.atlas.transaction.model.TransactionStatus;
 import com.atlas.bank.atlas.transaction.model.TransactionType;
+import com.atlas.bank.atlas.transaction.model.state.PendingState;
 import com.atlas.bank.atlas.transaction.service.transfer.TransferContext;
 
 import java.math.BigDecimal;
@@ -16,7 +17,8 @@ public class TransactionFactory {
         transaction.setTargetAccountId(context.to().getId());
         transaction.setAmount(context.amount());
         transaction.setFee(fee);
-        transaction.setStatus(TransactionStatus.EXECUTED);
+        transaction.setStatus(TransactionStatus.PENDING);
+        transaction.advanceTo(new PendingState());
 
         return transaction;
     }

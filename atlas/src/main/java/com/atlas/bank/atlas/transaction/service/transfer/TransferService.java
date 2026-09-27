@@ -47,6 +47,10 @@ public class TransferService extends TransactionProcessor<TransferContext> imple
 
         // process => aplica el patrón Template Method
         Transaction transaction = process(new TransferContext(from, to, amount));
+        // Estados
+        transaction.advanceTo(transaction.getState().validate());
+        transaction.advanceTo(transaction.getState().execute());
+        transactionRepository.save(transaction); // Guarda (actualiza) otra vez la trx con su estado
         // Lanzar el evento
         eventPublisher.publishEvent(new TransactionExecutedEvent(
                 transaction.getId(),
