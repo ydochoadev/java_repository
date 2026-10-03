@@ -1,8 +1,13 @@
 package com.atlas.bank.atlas.account.model;
 
+import com.atlas.bank.atlas.shared.model.Currency;
+import com.atlas.bank.atlas.shared.model.Money;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.GenerationType;
@@ -45,8 +50,14 @@ public class Account {
     @Column(nullable = false, length = 20)
     private AccountType type; // SAVING, CHECKING
 
-    @Column(nullable = false)
-    private BigDecimal balance;
+    @Embedded
+    @AttributeOverrides(
+            {
+                    @AttributeOverride(name = "amount", column = @Column(name = "balance", nullable = false)),
+                    @AttributeOverride(name = "currency", column = @Column(name = "currency", nullable = false, length = 3))
+            }
+    )
+    private Money balance;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -59,6 +70,6 @@ public class Account {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
         if (this.status == null) this.status = AccountStatus.ACTIVE;
-        if (this.balance == null) this.balance = BigDecimal.ZERO;
+        if (this.balance == null) this.balance = Money.zero(Currency.ARS);
     }
 }
