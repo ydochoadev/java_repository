@@ -56,6 +56,11 @@ public class Money {
         return this.amount.compareTo(other.amount) > 0;
     }
 
+    public boolean isLessThan(Money other) {
+        validateSameCurrency(other);
+        return this.amount.compareTo(other.amount) < 0;
+    }
+
     public boolean isNegative() {
         return this.amount.compareTo(BigDecimal.ZERO) < 0;
     }
