@@ -6,6 +6,7 @@ import com.atlas.bank.atlas.transaction.model.state.RejectedState;
 import com.atlas.bank.atlas.transaction.model.state.ReversedState;
 import com.atlas.bank.atlas.transaction.model.state.TransactionState;
 import com.atlas.bank.atlas.transaction.model.state.ValidatedState;
+import com.atlas.bank.atlas.transaction.service.event.TransactionExecutedEvent;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -22,7 +23,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.AbstractAggregateRoot;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -33,8 +36,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Transaction {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
+public class Transaction extends AbstractAggregateRoot<Transaction> implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -89,5 +92,15 @@ public class Transaction {
     public void advanceTo(TransactionState newState) {
         this.state = newState;
         this.status = newState.status();
+    }
+
+    public void markAsExecuted() {
+        // Solo publica. Cuando se realice un save, spring lo publica
+        registerEvent(new TransactionExecutedEvent(this.id,
+                this.type.name(),
+                this.sourceAccountId,
+                this.targetAccountId,
+                this.amount,
+                this.fee));
     }
 }
