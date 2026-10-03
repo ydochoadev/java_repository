@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
-public class TransactionDomainService {
+public class TransferDomainService {
 
     public void transfer(Account fromAccount, Account toAccount, BigDecimal amount, BigDecimal fee) {
         Money totalDebit = Money.of(amount.add(fee), fromAccount.getBalance().getCurrency());

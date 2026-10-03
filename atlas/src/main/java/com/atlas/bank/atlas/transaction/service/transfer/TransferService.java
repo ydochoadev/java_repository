@@ -2,10 +2,10 @@ package com.atlas.bank.atlas.transaction.service.transfer;
 
 import com.atlas.bank.atlas.account.exeption.AccountNotFoundException;
 import com.atlas.bank.atlas.account.model.Account;
-import com.atlas.bank.atlas.shared.model.Money;
 import com.atlas.bank.atlas.transaction.model.Transaction;
 import com.atlas.bank.atlas.account.repoditory.AccountRepository;
 import com.atlas.bank.atlas.transaction.repository.TransactionRepository;
+import com.atlas.bank.atlas.transaction.service.domain.TransferDomainService;
 import com.atlas.bank.atlas.transaction.service.event.TransactionExecutedEvent;
 import com.atlas.bank.atlas.transaction.service.factory.TransactionFactory;
 import com.atlas.bank.atlas.transaction.service.fee.FeeCalculator;
@@ -24,17 +24,20 @@ public class TransferService extends TransactionProcessor<TransferContext> imple
     private final List<FeeCalculator> feeCalculators; // Se tiene TODA las implementaciones
     private final ApplicationEventPublisher eventPublisher;
     private final List<TransferValidator> validators;
+    private final TransferDomainService transferDomainService;
 
     public TransferService(TransactionRepository transactionRepository,
                            AccountRepository accountRepository,
                            List<FeeCalculator> feeCalculators,
                            ApplicationEventPublisher eventPublisher,
-                           List<TransferValidator> validators) {
+                           List<TransferValidator> validators,
+                           TransferDomainService transferDomainService) {
         super(transactionRepository);
         this.accountRepository = accountRepository;
         this.feeCalculators = feeCalculators;
         this.eventPublisher = eventPublisher;
         this.validators = validators;
+        this.transferDomainService = transferDomainService;
     }
 
     @Override
@@ -82,11 +85,7 @@ public class TransferService extends TransactionProcessor<TransferContext> imple
 
     @Override
     protected void execute(TransferContext context, BigDecimal fee) {
-        // Actualizar saldos
-        BigDecimal newFromBalance = context.from().getBalance().getAmount().subtract(context.amount()).subtract(fee);
-        context.from().setBalance(Money.of(newFromBalance, context.from().getBalance().getCurrency()));
-        BigDecimal newToBalance = context.to().getBalance().getAmount().add(context.amount());
-        context.to().setBalance(Money.of(newToBalance, context.to().getBalance().getCurrency()));
+        transferDomainService.transfer(context.from(), context.to(), context.amount(), fee);
         accountRepository.save(context.from());
         accountRepository.save(context.to());
     }
