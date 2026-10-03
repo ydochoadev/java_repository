@@ -6,11 +6,9 @@ import com.atlas.bank.atlas.transaction.model.Transaction;
 import com.atlas.bank.atlas.account.repoditory.AccountRepository;
 import com.atlas.bank.atlas.transaction.repository.TransactionRepository;
 import com.atlas.bank.atlas.transaction.service.domain.TransferDomainService;
-import com.atlas.bank.atlas.transaction.service.event.TransactionExecutedEvent;
 import com.atlas.bank.atlas.transaction.service.factory.TransactionFactory;
 import com.atlas.bank.atlas.transaction.service.fee.FeeCalculator;
 import com.atlas.bank.atlas.transaction.validation.chain.TransferValidator;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,20 +20,17 @@ public class TransferService extends TransactionProcessor<TransferContext> imple
 
     private final AccountRepository accountRepository;
     private final List<FeeCalculator> feeCalculators; // Se tiene TODA las implementaciones
-    private final ApplicationEventPublisher eventPublisher;
     private final List<TransferValidator> validators;
     private final TransferDomainService transferDomainService;
 
     public TransferService(TransactionRepository transactionRepository,
                            AccountRepository accountRepository,
                            List<FeeCalculator> feeCalculators,
-                           ApplicationEventPublisher eventPublisher,
                            List<TransferValidator> validators,
                            TransferDomainService transferDomainService) {
         super(transactionRepository);
         this.accountRepository = accountRepository;
         this.feeCalculators = feeCalculators;
-        this.eventPublisher = eventPublisher;
         this.validators = validators;
         this.transferDomainService = transferDomainService;
     }
@@ -54,16 +49,10 @@ public class TransferService extends TransactionProcessor<TransferContext> imple
         // Estados
         transaction.advanceTo(transaction.getState().validate());
         transaction.advanceTo(transaction.getState().execute());
-        transactionRepository.save(transaction); // Guarda (actualiza) otra vez la trx con su estado
-        // Lanzar el evento
-        eventPublisher.publishEvent(new TransactionExecutedEvent(
-                transaction.getId(),
-                transaction.getType().name(),
-                transaction.getSourceAccountId(),
-                transaction.getTargetAccountId(),
-                transaction.getAmount(),
-                transaction.getFee()
-        ));
+        // Registrar evento
+        transaction.markAsExecuted();
+        transactionRepository.save(transaction); // Guarda (actualiza) otra vez la trx con su estado. Publica evento
+
         return transaction;
     }
 
