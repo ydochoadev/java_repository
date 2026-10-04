@@ -103,4 +103,10 @@ public class Transaction extends AbstractAggregateRoot<Transaction> implements S
                 this.amount,
                 this.fee));
     }
+
+    public void executeTransfer() {
+        advanceTo(getState().validate());
+        advanceTo(getState().execute());
+        markAsExecuted();
+    }
 }
