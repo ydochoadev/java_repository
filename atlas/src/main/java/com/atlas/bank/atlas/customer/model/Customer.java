@@ -1,6 +1,10 @@
 package com.atlas.bank.atlas.customer.model;
 
+import com.atlas.bank.atlas.shared.model.Email;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
@@ -34,8 +38,13 @@ public class Customer {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+    @Embedded
+    @AttributeOverrides(
+            {
+                    @AttributeOverride(name = "value", column = @Column(name = "email", nullable = false, unique = true))
+            }
+    )
+    private Email email;
 
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)

@@ -1,6 +1,7 @@
 package com.atlas.bank.atlas.account.model;
 
 import com.atlas.bank.atlas.shared.model.Currency;
+import com.atlas.bank.atlas.shared.model.Email;
 import com.atlas.bank.atlas.shared.model.Money;
 import com.atlas.bank.atlas.transaction.exeption.InsufficientFundsException;
 import jakarta.persistence.AttributeOverride;
@@ -21,7 +22,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -44,8 +44,13 @@ public class Account {
     @Column(name = "owner_name", nullable = false)
     private String ownerName;
 
-    @Column(nullable = false)
-    private String email;
+    @Embedded
+    @AttributeOverrides(
+            {
+                    @AttributeOverride(name = "value", column = @Column(name = "email", nullable = false))
+            }
+    )
+    private Email email;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
