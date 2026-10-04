@@ -2,8 +2,8 @@ package com.atlas.bank.atlas.transaction.service.transfer;
 
 import com.atlas.bank.atlas.account.exeption.AccountNotFoundException;
 import com.atlas.bank.atlas.account.model.Account;
+import com.atlas.bank.atlas.account.repoditory.DomainAccountRepository;
 import com.atlas.bank.atlas.transaction.model.Transaction;
-import com.atlas.bank.atlas.account.repoditory.AccountRepository;
 import com.atlas.bank.atlas.transaction.repository.TransactionRepository;
 import com.atlas.bank.atlas.transaction.service.domain.TransferDomainService;
 import com.atlas.bank.atlas.transaction.service.factory.TransactionFactory;
@@ -18,13 +18,13 @@ import java.util.List;
 @Service
 public class TransferService extends TransactionProcessor<TransferContext> implements ITransferService {
 
-    private final AccountRepository accountRepository;
+    private final DomainAccountRepository accountRepository;
     private final List<FeeCalculator> feeCalculators; // Se tiene TODA las implementaciones
     private final List<TransferValidator> validators;
     private final TransferDomainService transferDomainService;
 
     public TransferService(TransactionRepository transactionRepository,
-                           AccountRepository accountRepository,
+                           DomainAccountRepository accountRepository,
                            List<FeeCalculator> feeCalculators,
                            List<TransferValidator> validators,
                            TransferDomainService transferDomainService) {
