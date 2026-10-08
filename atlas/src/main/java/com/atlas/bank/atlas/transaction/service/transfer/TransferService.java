@@ -2,8 +2,8 @@ package com.atlas.bank.atlas.transaction.service.transfer;
 
 import com.atlas.bank.atlas.account.exeption.AccountNotFoundException;
 import com.atlas.bank.atlas.account.model.Account;
-import com.atlas.bank.atlas.account.repoditory.DomainAccountRepository;
 import com.atlas.bank.atlas.application.port.in.TransferMoneyUseCase;
+import com.atlas.bank.atlas.application.port.out.AccountRepositoryPort;
 import com.atlas.bank.atlas.transaction.model.Transaction;
 import com.atlas.bank.atlas.transaction.repository.TransactionRepository;
 import com.atlas.bank.atlas.transaction.service.domain.TransferDomainService;
@@ -19,18 +19,18 @@ import java.util.List;
 @Service
 public class TransferService extends TransactionProcessor<TransferContext> implements ITransferService, TransferMoneyUseCase {
 
-    private final DomainAccountRepository accountRepository;
+    private final AccountRepositoryPort accountRepositoryPort;
     private final List<FeeCalculator> feeCalculators; // Se tiene TODA las implementaciones
     private final List<TransferValidator> validators;
     private final TransferDomainService transferDomainService;
 
     public TransferService(TransactionRepository transactionRepository,
-                           DomainAccountRepository accountRepository,
+                           AccountRepositoryPort accountRepositoryPort,
                            List<FeeCalculator> feeCalculators,
                            List<TransferValidator> validators,
                            TransferDomainService transferDomainService) {
         super(transactionRepository);
-        this.accountRepository = accountRepository;
+        this.accountRepositoryPort = accountRepositoryPort;
         this.feeCalculators = feeCalculators;
         this.validators = validators;
         this.transferDomainService = transferDomainService;
@@ -40,9 +40,9 @@ public class TransferService extends TransactionProcessor<TransferContext> imple
     @Transactional
     public Transaction execute(Long fromId, Long toId, BigDecimal amount) {
         // Buscar cuentas
-        Account from = accountRepository.findById(fromId)
+        Account from = this.accountRepositoryPort.findById(fromId)
                 .orElseThrow(() -> new AccountNotFoundException(fromId));
-        Account to = accountRepository.findById(toId)
+        Account to = this.accountRepositoryPort.findById(toId)
                 .orElseThrow(() -> new AccountNotFoundException(toId));
 
         // process => aplica el patrón Template Method
@@ -73,8 +73,8 @@ public class TransferService extends TransactionProcessor<TransferContext> imple
     @Override
     protected void execute(TransferContext context, BigDecimal fee) {
         transferDomainService.transfer(context.from(), context.to(), context.amount(), fee);
-        accountRepository.save(context.from());
-        accountRepository.save(context.to());
+        this.accountRepositoryPort.save(context.from());
+        this.accountRepositoryPort.save(context.to());
     }
 
     @Override
