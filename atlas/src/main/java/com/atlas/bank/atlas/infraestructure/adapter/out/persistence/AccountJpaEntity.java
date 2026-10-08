@@ -1,9 +1,10 @@
-package com.atlas.bank.atlas.account.model;
+package com.atlas.bank.atlas.infraestructure.adapter.out.persistence;
 
-import com.atlas.bank.atlas.shared.model.Currency;
+import com.atlas.bank.atlas.domain.model.account.AccountStatus;
+import com.atlas.bank.atlas.domain.model.account.AccountType;
+import com.atlas.bank.atlas.domain.model.shared.Currency;
 import com.atlas.bank.atlas.shared.model.Email;
 import com.atlas.bank.atlas.shared.model.Money;
-import com.atlas.bank.atlas.transaction.exeption.InsufficientFundsException;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Entity;
@@ -31,7 +32,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Account {
+public class AccountJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,29 +46,23 @@ public class Account {
     private String ownerName;
 
     @Embedded
-    @AttributeOverrides(
-            {
-                    @AttributeOverride(name = "value", column = @Column(name = "email", nullable = false))
-            }
-    )
+    @AttributeOverride(name = "value", column = @Column(name = "email", nullable = false))
     private Email email;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private AccountType type; // SAVING, CHECKING
+    private AccountType type;
 
     @Embedded
-    @AttributeOverrides(
-            {
-                    @AttributeOverride(name = "amount", column = @Column(name = "balance", nullable = false)),
-                    @AttributeOverride(name = "currency", column = @Column(name = "currency", nullable = false, length = 3))
-            }
-    )
+    @AttributeOverrides({
+            @AttributeOverride(name = "amount", column = @Column(name = "balance", nullable = false)),
+            @AttributeOverride(name = "currency", column = @Column(name = "currency", nullable = false, length = 3))
+    })
     private Money balance;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private AccountStatus status; // ACTIVE, CLOSED, FROZEN
+    private AccountStatus status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -78,25 +73,7 @@ public class Account {
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
-        if (this.status == null) this.status = AccountStatus.ACTIVE;
-        if (this.balance == null) this.balance = Money.zero(Currency.ARS);
-    }
-
-    public void deposit(Money money) {
-        if (money.isNegative()) {
-            throw new IllegalArgumentException("El monto a depositar no puede ser negativo");
-        }
-        this.balance = this.balance.add(money);
-    }
-
-    public void withdraw(Money money) {
-        if (money.isNegative()) {
-            throw new IllegalArgumentException("El monto a retirar no puede ser negativo");
-        }
-        if (this.balance.isLessThan(money)) {
-            throw new InsufficientFundsException(id, this.balance.getAmount(), money.getAmount());
-        }
-
-        this.balance = this.balance.subtract(money);
+        if (status == null) status = AccountStatus.ACTIVE;
+        if (balance == null) balance = Money.zero(Currency.ARS);
     }
 }

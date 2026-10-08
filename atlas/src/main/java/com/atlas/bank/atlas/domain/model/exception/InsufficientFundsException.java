@@ -1,4 +1,4 @@
-package com.atlas.bank.atlas.transaction.exeption;
+package com.atlas.bank.atlas.domain.model.exception;
 
 import java.math.BigDecimal;
 

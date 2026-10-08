@@ -1,6 +1,6 @@
 package com.atlas.bank.atlas.transaction.validation.chain;
 
-import com.atlas.bank.atlas.account.model.AccountStatus;
+import com.atlas.bank.atlas.domain.model.account.AccountStatus;
 import com.atlas.bank.atlas.transaction.exeption.AccountNotActiveException;
 import com.atlas.bank.atlas.transaction.service.transfer.TransferContext;
 import org.springframework.core.annotation.Order;

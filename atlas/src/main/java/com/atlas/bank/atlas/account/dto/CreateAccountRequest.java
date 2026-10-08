@@ -1,6 +1,6 @@
 package com.atlas.bank.atlas.account.dto;
 
-import com.atlas.bank.atlas.account.model.AccountType;
+import com.atlas.bank.atlas.domain.model.account.AccountType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
