@@ -1,6 +1,7 @@
 package com.atlas.bank.atlas.account.service;
 
-import com.atlas.bank.atlas.account.dto.DashboardResponse;
+import com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto.DashboardResponse;
+import com.atlas.bank.atlas.application.service.IAccountService;
 import com.atlas.bank.atlas.domain.model.account.Account;
 import com.atlas.bank.atlas.transaction.dto.TransactionMapper;
 import com.atlas.bank.atlas.transaction.dto.TransactionResponse;

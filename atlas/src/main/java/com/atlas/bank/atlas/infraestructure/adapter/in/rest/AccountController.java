@@ -1,12 +1,12 @@
-package com.atlas.bank.atlas.account.controller;
+package com.atlas.bank.atlas.infraestructure.adapter.in.rest;
 
-import com.atlas.bank.atlas.account.dto.AccountMapper;
-import com.atlas.bank.atlas.account.dto.AccountResponse;
-import com.atlas.bank.atlas.account.dto.CreateAccountRequest;
-import com.atlas.bank.atlas.account.dto.DashboardResponse;
+import com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto.AccountMapper;
+import com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto.AccountResponse;
+import com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto.CreateAccountRequest;
+import com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto.DashboardResponse;
 
 import com.atlas.bank.atlas.account.service.AccountDashboardFacade;
-import com.atlas.bank.atlas.account.service.IAccountService;
+import com.atlas.bank.atlas.application.service.IAccountService;
 import com.atlas.bank.atlas.domain.model.account.Account;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

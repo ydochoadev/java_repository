@@ -1,4 +1,4 @@
-package com.atlas.bank.atlas.account.dto;
+package com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto;
 
 import com.atlas.bank.atlas.domain.model.account.AccountType;
 import jakarta.validation.constraints.Email;
