@@ -1,6 +1,6 @@
 package com.atlas.bank.atlas.transaction.service;
 
-import com.atlas.bank.atlas.transaction.model.Transaction;
+import com.atlas.bank.atlas.domain.model.transaction.Transaction;
 import com.atlas.bank.atlas.transaction.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.atlas.bank.atlas.application.port.out;
 
-import com.atlas.bank.atlas.transaction.service.fraud.FraudCheckResult;
+import com.atlas.bank.atlas.domain.model.shared.FraudCheckResult;
 
 import java.math.BigDecimal;
 

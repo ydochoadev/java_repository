@@ -1,6 +1,6 @@
 package com.atlas.bank.atlas.transaction.service.listener;
 
-import com.atlas.bank.atlas.transaction.service.event.TransactionExecutedEvent;
+import com.atlas.bank.atlas.domain.event.TransactionExecutedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
