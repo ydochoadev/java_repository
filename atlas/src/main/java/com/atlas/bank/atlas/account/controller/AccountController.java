@@ -4,9 +4,10 @@ import com.atlas.bank.atlas.account.dto.AccountMapper;
 import com.atlas.bank.atlas.account.dto.AccountResponse;
 import com.atlas.bank.atlas.account.dto.CreateAccountRequest;
 import com.atlas.bank.atlas.account.dto.DashboardResponse;
-import com.atlas.bank.atlas.account.model.Account;
+
 import com.atlas.bank.atlas.account.service.AccountDashboardFacade;
 import com.atlas.bank.atlas.account.service.IAccountService;
+import com.atlas.bank.atlas.domain.model.account.Account;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

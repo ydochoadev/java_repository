@@ -1,9 +1,10 @@
 package com.atlas.bank.atlas.account.dto;
 
-import com.atlas.bank.atlas.account.model.Account;
+import com.atlas.bank.atlas.domain.model.account.Account;
 import com.atlas.bank.atlas.domain.model.shared.Currency;
-import com.atlas.bank.atlas.shared.model.Email;
-import com.atlas.bank.atlas.shared.model.Money;
+
+import com.atlas.bank.atlas.domain.model.shared.Email;
+import com.atlas.bank.atlas.domain.model.shared.Money;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
