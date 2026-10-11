@@ -1,5 +1,8 @@
 package com.atlas.bank.atlas.application.service;
 
+import com.atlas.bank.atlas.application.port.in.CreateAccountUseCase;
+import com.atlas.bank.atlas.application.port.in.GetAccountUseCase;
+import com.atlas.bank.atlas.application.port.in.ListAccountsUseCase;
 import com.atlas.bank.atlas.application.port.out.AccountRepositoryPort;
 import com.atlas.bank.atlas.domain.model.account.Account;
 import com.atlas.bank.atlas.domain.model.exception.AccountNotFoundException;
@@ -13,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AccountService implements IAccountService {
+public class AccountService implements CreateAccountUseCase, ListAccountsUseCase, GetAccountUseCase {
 
     private final AccountRepositoryPort accountRepository;
 

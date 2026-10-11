@@ -1,18 +1,19 @@
-package com.atlas.bank.atlas.customer.model;
+package com.atlas.bank.atlas.infraestructure.adapter.out.persistence;
 
-import com.atlas.bank.atlas.shared.model.Email;
+import com.atlas.bank.atlas.domain.model.customer.CustomerStatus;
+
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -22,13 +23,13 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "constomers")
+@Table(name = "customers")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Customer {
+public class CustomerJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,15 +40,11 @@ public class Customer {
     private String name;
 
     @Embedded
-    @AttributeOverrides(
-            {
-                    @AttributeOverride(name = "value", column = @Column(name = "email", nullable = false, unique = true))
-            }
-    )
+    @AttributeOverride(name = "value", column = @Column(name = "email", nullable = false, unique = true))
     private Email email;
 
-    @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private CustomerStatus status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -56,9 +53,6 @@ public class Customer {
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
-    }
-
-    public boolean isActive() {
-        return this.status == CustomerStatus.ACTIVE;
+        if (status == null) status = CustomerStatus.ACTIVE;
     }
 }

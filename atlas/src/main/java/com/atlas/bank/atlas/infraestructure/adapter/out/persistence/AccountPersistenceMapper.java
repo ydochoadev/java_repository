@@ -36,11 +36,11 @@ public class AccountPersistenceMapper {
         entity.setAccountNumber(account.getAccountNumber());
         entity.setOwnerName(account.getOwnerName());
         entity.setEmail(account.getEmail() != null
-                ? com.atlas.bank.atlas.shared.model.Email.of(account.getEmail().getValue())
+                ? com.atlas.bank.atlas.infraestructure.adapter.out.persistence.Email.of(account.getEmail().getValue())
                 : null);
         entity.setType(account.getType());
         entity.setBalance(account.getBalance() != null
-                ? com.atlas.bank.atlas.shared.model.Money.of(
+                ? Money.of(
                 account.getBalance().getAmount(),
                 com.atlas.bank.atlas.domain.model.shared.Currency.valueOf(
                         account.getBalance().getCurrency().name()))

@@ -1,4 +1,4 @@
-package com.atlas.bank.atlas.shared.model;
+package com.atlas.bank.atlas.infraestructure.adapter.out.persistence;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -17,11 +17,10 @@ public class Email {
 
     private Email(String value) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("El correo no puede ser nulo o vacío");
+            throw new IllegalArgumentException("El email no puede ser nulo o vacío");
         }
-
-        if (value.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
-            throw new IllegalArgumentException("El correo no tiene el formato correcto: " + value);
+        if (!value.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+            throw new IllegalArgumentException("El email no tiene un formato válido: " + value);
         }
         this.value = value.toLowerCase().trim();
     }
@@ -32,6 +31,6 @@ public class Email {
 
     @Override
     public String toString() {
-        return this.value;
+        return value;
     }
 }

@@ -1,11 +1,11 @@
 package com.atlas.bank.atlas.infraestructure.adapter.in.rest;
 
+import com.atlas.bank.atlas.application.port.in.GetTransactionsByAccountUseCase;
 import com.atlas.bank.atlas.application.port.in.TransferMoneyUseCase;
 import com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto.TransactionMapper;
 import com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto.TransferRequest;
 import com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto.TransactionResponse;
 import com.atlas.bank.atlas.domain.model.transaction.Transaction;
-import com.atlas.bank.atlas.application.service.ITransactionQueryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +24,12 @@ import java.util.List;
 public class TransactionController {
 
     private final TransferMoneyUseCase transferMoneyUseCase;
-    private final ITransactionQueryService transactionQueryService;
+    private final GetTransactionsByAccountUseCase getTransactionsByAccountUseCase;
     private final TransactionMapper transactionMapper;
 
     @PostMapping("/transfer")
     public ResponseEntity<TransactionResponse> transfer(@Valid @RequestBody TransferRequest request) {
-        Transaction transaction = transferMoneyUseCase.execute(
+        Transaction transaction = transferMoneyUseCase.transfer(
                 request.getFromAccountId(),
                 request.getToAccountId(),
                 request.getAmount()
@@ -41,7 +41,7 @@ public class TransactionController {
 
     @GetMapping("/{id}/transactions")
     public ResponseEntity<List<TransactionResponse>> getTransactions(@PathVariable Long id) {
-        List<TransactionResponse> transactionResponseList = transactionQueryService.getByAccountId(id)
+        List<TransactionResponse> transactionResponseList = getTransactionsByAccountUseCase.getByAccountId(id)
                 .stream()
                 .map(this.transactionMapper::toResponse)
                 .toList();

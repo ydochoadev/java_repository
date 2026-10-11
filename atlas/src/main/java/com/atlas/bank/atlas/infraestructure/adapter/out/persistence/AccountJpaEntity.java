@@ -3,8 +3,6 @@ package com.atlas.bank.atlas.infraestructure.adapter.out.persistence;
 import com.atlas.bank.atlas.domain.model.account.AccountStatus;
 import com.atlas.bank.atlas.domain.model.account.AccountType;
 import com.atlas.bank.atlas.domain.model.shared.Currency;
-import com.atlas.bank.atlas.shared.model.Email;
-import com.atlas.bank.atlas.shared.model.Money;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Entity;

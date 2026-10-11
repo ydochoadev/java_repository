@@ -1,4 +1,4 @@
-package com.atlas.bank.atlas.shared.config;
+package com.atlas.bank.atlas.infraestructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
