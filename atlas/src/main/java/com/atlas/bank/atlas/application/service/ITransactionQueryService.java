@@ -1,4 +1,4 @@
-package com.atlas.bank.atlas.transaction.service;
+package com.atlas.bank.atlas.application.service;
 
 import com.atlas.bank.atlas.domain.model.transaction.Transaction;
 

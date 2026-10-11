@@ -1,4 +1,4 @@
-package com.atlas.bank.atlas.transaction.validation;
+package com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

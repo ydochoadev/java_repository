@@ -1,7 +1,7 @@
-package com.atlas.bank.atlas.transaction.service.transfer;
+package com.atlas.bank.atlas.application.service;
 
+import com.atlas.bank.atlas.application.port.out.TransactionRepositoryPort;
 import com.atlas.bank.atlas.domain.model.transaction.Transaction;
-import com.atlas.bank.atlas.transaction.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,7 +12,7 @@ public abstract class TransactionProcessor<C> {
 
     // Inyecta el repo porque en cada operación (retiro, trx, depósito) necesita la BD
     // Para no colocarlo en cada servicio
-    protected final TransactionRepository transactionRepository;
+    protected final TransactionRepositoryPort transactionRepository;
 
     @Transactional
     public Transaction process(C context) {

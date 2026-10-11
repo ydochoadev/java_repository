@@ -12,7 +12,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class JpaAccountRepositoryAdapter implements AccountRepositoryPort {
 
-    private final SpringDataAccountrepository repository;
+    private final SpringDataAccountRepository repository;
     private final AccountPersistenceMapper mapper;
 
     @Override

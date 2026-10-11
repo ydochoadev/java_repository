@@ -1,11 +1,11 @@
-package com.atlas.bank.atlas.transaction.controller;
+package com.atlas.bank.atlas.infraestructure.adapter.in.rest;
 
 import com.atlas.bank.atlas.application.port.in.TransferMoneyUseCase;
-import com.atlas.bank.atlas.transaction.dto.TransactionMapper;
-import com.atlas.bank.atlas.transaction.dto.TransferRequest;
-import com.atlas.bank.atlas.transaction.dto.TransactionResponse;
+import com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto.TransactionMapper;
+import com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto.TransferRequest;
+import com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto.TransactionResponse;
 import com.atlas.bank.atlas.domain.model.transaction.Transaction;
-import com.atlas.bank.atlas.transaction.service.ITransactionQueryService;
+import com.atlas.bank.atlas.application.service.ITransactionQueryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

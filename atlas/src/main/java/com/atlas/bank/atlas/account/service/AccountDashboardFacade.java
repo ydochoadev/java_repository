@@ -3,9 +3,9 @@ package com.atlas.bank.atlas.account.service;
 import com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto.DashboardResponse;
 import com.atlas.bank.atlas.application.service.IAccountService;
 import com.atlas.bank.atlas.domain.model.account.Account;
-import com.atlas.bank.atlas.transaction.dto.TransactionMapper;
-import com.atlas.bank.atlas.transaction.dto.TransactionResponse;
-import com.atlas.bank.atlas.transaction.service.ITransactionQueryService;
+import com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto.TransactionMapper;
+import com.atlas.bank.atlas.infraestructure.adapter.in.rest.dto.TransactionResponse;
+import com.atlas.bank.atlas.application.service.ITransactionQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
