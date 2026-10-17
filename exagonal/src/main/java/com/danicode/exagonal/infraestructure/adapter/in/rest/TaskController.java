@@ -27,7 +27,7 @@ public class TaskController {
                 .description(createTaskRequest.getDescription())
                 .build();
 
-        Task saved = this.createTaskUseCase.execute(task);
+        Task saved = this.createTaskUseCase.create(task);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(TaskResponse.from(saved));
     }

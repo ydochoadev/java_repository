@@ -13,7 +13,7 @@ public class TaskService implements CreateTaskUseCase {
     private final TaskRepositoryPort taskRepositoryPort;
 
     @Override
-    public Task execute(Task task) {
+    public Task create(Task task) {
         return this.taskRepositoryPort.save(task);
     }
 }
