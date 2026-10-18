@@ -35,4 +35,12 @@ public class JpaTaskRepositoryAdapter implements TaskRepositoryPort {
     public Optional<Task> findById(Long id) {
         return this.springDataTaskRepository.findById(id).map(this.mapper::toDomain);
     }
+
+    @Override
+    public Task update(Task task) {
+        TaskJpaEntity entity = this.mapper.toJpaEntity(task);
+        TaskJpaEntity saved = this.springDataTaskRepository.save(entity);
+
+        return this.mapper.toDomain(saved);
+    }
 }

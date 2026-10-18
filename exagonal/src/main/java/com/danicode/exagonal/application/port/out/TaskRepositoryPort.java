@@ -11,4 +11,6 @@ public interface TaskRepositoryPort {
     List<Task> findAll();
 
     Optional<Task> findById(Long id);
+
+    Task update(Task task);
 }

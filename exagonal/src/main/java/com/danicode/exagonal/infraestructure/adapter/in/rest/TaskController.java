@@ -1,8 +1,10 @@
 package com.danicode.exagonal.infraestructure.adapter.in.rest;
 
+import com.danicode.exagonal.application.port.in.CompleteTaskUseCase;
 import com.danicode.exagonal.application.port.in.CreateTaskUseCase;
 import com.danicode.exagonal.application.port.in.GetTaskUseCase;
 import com.danicode.exagonal.application.port.in.ListTasksUseCase;
+import com.danicode.exagonal.application.port.in.ReopenTaskUseCase;
 import com.danicode.exagonal.domain.model.Task;
 import com.danicode.exagonal.infraestructure.adapter.in.rest.dto.CreateTaskRequest;
 import com.danicode.exagonal.infraestructure.adapter.in.rest.dto.TaskResponse;
@@ -10,7 +12,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 import java.util.List;
 
@@ -22,6 +30,8 @@ public class TaskController {
     private final CreateTaskUseCase createTaskUseCase;
     private final ListTasksUseCase listTasksUseCase;
     private final GetTaskUseCase getTaskUseCase;
+    private final CompleteTaskUseCase completeTaskUseCase;
+    private final ReopenTaskUseCase reopenTaskUseCase;
 
     @PostMapping
     public ResponseEntity<TaskResponse> create(@Valid @RequestBody CreateTaskRequest createTaskRequest) {
@@ -48,6 +58,18 @@ public class TaskController {
     @GetMapping("/{id}")
     public ResponseEntity<TaskResponse> getById(@PathVariable Long id) {
         Task task = this.getTaskUseCase.getById(id);
+        return ResponseEntity.ok(TaskResponse.from(task));
+    }
+
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<TaskResponse> complete(@PathVariable Long id) {
+        Task task = this.completeTaskUseCase.complete(id);
+        return ResponseEntity.ok(TaskResponse.from(task));
+    }
+
+    @PatchMapping("/{id}/reopen")
+    public ResponseEntity<TaskResponse> reopen(@PathVariable Long id) {
+        Task task = this.reopenTaskUseCase.reopen(id);
         return ResponseEntity.ok(TaskResponse.from(task));
     }
 }

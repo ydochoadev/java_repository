@@ -1,8 +1,6 @@
 package com.danicode.exagonal.application.service;
 
-import com.danicode.exagonal.application.port.in.CreateTaskUseCase;
-import com.danicode.exagonal.application.port.in.GetTaskUseCase;
-import com.danicode.exagonal.application.port.in.ListTasksUseCase;
+import com.danicode.exagonal.application.port.in.*;
 import com.danicode.exagonal.application.port.out.TaskRepositoryPort;
 import com.danicode.exagonal.domain.exeption.TaskNotFoundException;
 import com.danicode.exagonal.domain.model.Task;
@@ -13,7 +11,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TaskService implements CreateTaskUseCase, ListTasksUseCase, GetTaskUseCase {
+public class TaskService implements
+        CreateTaskUseCase,
+        ListTasksUseCase,
+        GetTaskUseCase,
+        CompleteTaskUseCase,
+        ReopenTaskUseCase {
 
     private final TaskRepositoryPort taskRepositoryPort;
 
@@ -32,5 +35,23 @@ public class TaskService implements CreateTaskUseCase, ListTasksUseCase, GetTask
     @Override
     public List<Task> listAll() {
         return this.taskRepositoryPort.findAll();
+    }
+
+    @Override
+    public Task complete(Long id) {
+        Task task = this.taskRepositoryPort.findById(id).orElseThrow(
+                () -> new TaskNotFoundException(id));
+        task.complete();
+
+        return this.taskRepositoryPort.update(task);
+    }
+
+    @Override
+    public Task reopen(Long id) {
+        Task task = this.taskRepositoryPort.findById(id).orElseThrow(
+                () -> new TaskNotFoundException(id));
+        task.reopen();
+
+        return this.taskRepositoryPort.update(task);
     }
 }
