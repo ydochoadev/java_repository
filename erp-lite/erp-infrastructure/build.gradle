@@ -1,0 +1,10 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    // Dependencias de la capa de infraestructura
+    implementation project(':erp-common')
+    implementation project(':erp-domain')
+    implementation project(':erp-application')
+}
