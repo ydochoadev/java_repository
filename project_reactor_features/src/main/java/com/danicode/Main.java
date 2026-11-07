@@ -1,8 +1,14 @@
 package com.danicode;
 
+import com.danicode.callbacks.CallBacksExample;
+import com.danicode.database.Database;
 import com.danicode.error_handler.FallbackService;
 import com.danicode.error_handler.HandleDisabledVideoGame;
+import com.danicode.models.Console;
+import com.danicode.models.Videogame;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
+import reactor.util.context.Context;
 
 @Slf4j
 public class Main {
@@ -82,9 +88,34 @@ public class Main {
         System.out.println("--- 1. IMPRESIÓN DIRECTA CON SYSTEM.OUT ---");
         log.info("--- 2. IMPRESIÓN CON SLF4J LOGGER ---");
         HandleDisabledVideoGame.handleDisabledVideoGameDefault().subscribe(v -> log.info(v.toString()));*/
-        System.out.println("FALLBACK SERVICE");
+        /*System.out.println("FALLBACK SERVICE");
         FallbackService.callFallback()
-                .subscribe(System.out::println);
+                .subscribe(System.out::println);*/
+        /*System.out.println("CALLBACKS");
+        CallBacksExample.callbacks()
+                .subscribe(data -> System.out.println(data.getName()),
+                        error -> System.out.println(error.getMessage()),
+                        () -> System.out.println("DONE - FINISH SUBS"));*/
 
+
+        Database.getDataAsFlux()
+                // filterWhen es async
+                .filterWhen(game -> Mono.deferContextual(contextView -> {
+                            var userId = contextView.getOrDefault("userId", "0");
+                            if (userId.startsWith("1")) {
+                                return Mono.just(videoGameForConsole(game, Console.XBOX));
+                            } else if (userId.startsWith("2")) {
+                                return Mono.just(videoGameForConsole(game, Console.PLAYSTATION));
+                            }
+                            return Mono.just(false);
+                        }
+                ))
+                // Contexto antes del subcribe
+                .contextWrite(Context.of("userId", "10020192"))
+                .subscribe(game -> System.out.println("Recomendación: " + game.getName() + " Console: " + game.getConsole()));
+    }
+
+    private static boolean videoGameForConsole(Videogame videoGame, Console console) {
+        return videoGame.getConsole() == console || videoGame.getConsole() == Console.ALL;
     }
 }

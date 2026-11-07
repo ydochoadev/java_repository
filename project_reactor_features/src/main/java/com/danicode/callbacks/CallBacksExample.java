@@ -11,20 +11,20 @@ public class CallBacksExample {
         // Todos los callbacks empiezan con "doOn"
         return Database.getDataAsFlux()
                 // Se ejecuta cuando un Subscriber se suscribe al flujo. Útil para logs o inicialización
-                .doOnSubscribe(subs -> log.info("[DoOnSubscribe]: {}", subs))
+                .doOnSubscribe(subs -> System.out.println("[DoOnSubscribe]: {}"))
                 // Se llama cuando el Subscriber solicita elementos (request(n), backpressure)
-                .doOnRequest(n -> log.info("[DoOnRequest]: {}", n))
+                .doOnRequest(n -> System.out.println("[DoOnRequest]: " + n))
                 // Emite el siguiente elemento
-                .doOnNext(videogame -> log.info("[DoOnNext]: {}", videogame.getName()))
+                .doOnNext(videogame -> System.out.println("[DoOnNext]: " + videogame.getName() ))
                 // Se ejecuta si el flujo se cancela antes de completarse. Puede ser por subscription.cancel(),
                 // dispose(), o por un operador como take(n)
-                .doOnCancel(() -> log.warn("[DoOnCancel]"))
+                .doOnCancel(() -> System.out.println("[DoOnCancel]"))
                 .doOnError(e -> log.error("[DoOnError]", e))
                 // Solo se ejecuta si salio ok
-                .doOnComplete(() -> log.info("[DoOnComplete]"))
+                .doOnComplete(() -> System.out.println("[DoOnComplete]"))
                 // Se ejecuta cuando el flujo termina, sea por éxito o error. Es similar a doOnComplete + doOnError
-                .doOnTerminate(() -> log.info("[DoOnTerminate]"))
+                .doOnTerminate(() -> System.out.println("[DoOnTerminate]"))
                 // Se ejecuta al final del flujo, indicando la razón (CANCEL, COMPLETE, ERROR)
-                .doFinally(s -> log.info("[DoFinally]: {}", s));
+                .doFinally(s -> System.out.println("[DoFinally]: " + s));
     }
 }
