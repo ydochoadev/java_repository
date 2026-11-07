@@ -7,12 +7,15 @@ import com.danicode.error_handler.HandleDisabledVideoGame;
 import com.danicode.models.Console;
 import com.danicode.models.Videogame;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.context.Context;
 
+import java.time.Duration;
+
 @Slf4j
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         // Se publica un valor
        /* Mono<String> stringMono = Mono.just("Hello World xxx")
                 .doOnNext(value -> log.info("[onNext]: " + value))
@@ -98,7 +101,7 @@ public class Main {
                         () -> System.out.println("DONE - FINISH SUBS"));*/
 
 
-        Database.getDataAsFlux()
+       /* Database.getDataAsFlux()
                 // filterWhen es async
                 .filterWhen(game -> Mono.deferContextual(contextView -> {
                             var userId = contextView.getOrDefault("userId", "0");
@@ -112,7 +115,34 @@ public class Main {
                 ))
                 // Contexto antes del subcribe
                 .contextWrite(Context.of("userId", "10020192"))
-                .subscribe(game -> System.out.println("Recomendación: " + game.getName() + " Console: " + game.getConsole()));
+                .subscribe(game -> System.out.println("Recomendación: " + game.getName() + " Console: " + game.getConsole()));*/
+
+
+        // RECIBE LOS DATOS DESDE EL ORIGEN (DESDE EL CERO)
+        System.out.println("Cold Publishers");
+        Flux<Integer> coldPublishers = Flux.range(1, 10);
+        System.out.println("Subs 1 subscribed");
+        coldPublishers.subscribe(n -> System.out.println("[S1]: " + n));
+        System.out.println("Subs 2 subscribed");
+        coldPublishers.subscribe(n -> System.out.println("[S2]: " + n));
+        System.out.println("Subs 3 subscribed");
+        coldPublishers.subscribe(n -> System.out.println("[S3]: " + n));
+
+        // RECIBE LOS DATOS DESDE QUE SE SUSCRIBE
+        System.out.println("Hot Publishers");
+        Flux<Long> hotPublishers = Flux.interval(Duration.ofSeconds(1))
+                .publish()
+                // Espera al menos un suscriptor para empezar a emitir datos
+                .autoConnect();
+        System.out.println("Subs 4 subscribed");
+        hotPublishers.subscribe(n -> System.out.println("[S4]: " + n));
+        Thread.sleep(2000);
+        System.out.println("Subs 5 subscribed");
+        hotPublishers.subscribe(n -> System.out.println("[S5]: " + n));
+        Thread.sleep(1000);
+        System.out.println("Subs 6 subscribed");
+        hotPublishers.subscribe(n -> System.out.println("[S6]: " + n));
+        Thread.sleep(10000);
     }
 
     private static boolean videoGameForConsole(Videogame videoGame, Console console) {
