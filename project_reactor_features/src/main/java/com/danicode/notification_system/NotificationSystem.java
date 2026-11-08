@@ -2,12 +2,16 @@ package com.danicode.notification_system;
 
 import com.danicode.notification_system.models.NotificationEvent;
 import com.danicode.notification_system.models.NotificationStatus;
+import com.danicode.notification_system.models.Priority;
 import com.danicode.notification_system.service.EmailService;
 import com.danicode.notification_system.service.NotificationService;
 import com.danicode.notification_system.service.PhoneService;
 import com.danicode.notification_system.service.TeamService;
 import lombok.Getter;
+import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -36,6 +40,7 @@ public class NotificationSystem {
         // onBackpressureBuffer: guarda los datos en un buffer cuando los subscriptores no pueden procesar tanta carga
         this.mainEvent = Sinks.many().multicast().onBackpressureBuffer();
         this.historySink = Sinks.many().replay().limit(50); // registro de las últimas 50 notificaciones
+        // Emite datos al subscritor
         this.teamsSink = Sinks.one();
         this.emailSink = Sinks.one();
         this.phoneSink = Sinks.one();
@@ -72,5 +77,66 @@ public class NotificationSystem {
             cacheEvent.setStatus(NotificationStatus.DELIVERED);
             this.historySink.tryEmitNext(cacheEvent);
         }
+    }
+
+    private void routeEventByPriority(NotificationEvent event) {
+        this.teamsSink.tryEmitValue(event); // Siempre se envía por teams
+        var priority = event.getPriority();
+        if (priority == Priority.HIGH || priority == Priority.MEDIUM) {
+            this.emailSink.tryEmitValue(event);
+        }
+
+        if (priority == Priority.HIGH) {
+            this.phoneSink.tryEmitValue(event);
+        }
+    }
+
+    private static final String TEAMS_CHANNEL = "Teams";
+    private static final String EMAIL_CHANNEL = "Email";
+    private static final String PHONE_CHANNEL = "Phone";
+
+    // Subscriptor para teams
+    private void setupTeamsProcessor() {
+        this.teamsSink
+                .asMono()
+                // Se vuelve a subscribir
+                .repeat()
+                .flatMap(event -> this.teamsService.sendNotification(event)
+                        // Sobre qué hilo se subscribe
+                        .subscribeOn(Schedulers.boundedElastic())
+                        .doOnSuccess(success -> this.updateSuccessStatus(event, TEAMS_CHANNEL))
+                        .doOnError(error -> this.updateErrorStatus(event, TEAMS_CHANNEL, error))
+                        .onErrorResume(error -> Mono.just(false)))
+                .subscribe();
+    }
+
+    // Subscriptor para Email
+    private void emailProcessor() {
+        this.emailSink
+                .asMono()
+                // Se vuelve a subscribir
+                .repeat()
+                .flatMap(event -> this.emailService.sendNotification(event)
+                        // Sobre qué hilo se subscribe
+                        .subscribeOn(Schedulers.boundedElastic())
+                        .doOnSuccess(success -> this.updateSuccessStatus(event, EMAIL_CHANNEL))
+                        .doOnError(error -> this.updateErrorStatus(event, EMAIL_CHANNEL, error))
+                        .onErrorResume(error -> Mono.just(false)))
+                .subscribe();
+    }
+
+    // Subscriptor para Phone
+    private void phoneProcessor() {
+        this.phoneSink
+                .asMono()
+                // Se vuelve a subscribir
+                .repeat()
+                .flatMap(event -> this.phoneService.sendNotification(event)
+                        // Sobre qué hilo se subscribe
+                        .subscribeOn(Schedulers.boundedElastic())
+                        .doOnSuccess(success -> this.updateSuccessStatus(event, PHONE_CHANNEL))
+                        .doOnError(error -> this.updateErrorStatus(event, PHONE_CHANNEL, error))
+                        .onErrorResume(error -> Mono.just(false)))
+                .subscribe();
     }
 }

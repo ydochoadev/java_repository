@@ -9,6 +9,8 @@ public class TeamService implements NotificationService {
 
     @Override
     public Mono<Boolean> sendNotification(NotificationEvent event) {
+        // Mono.fromCallable() para convertir una operación Java tradicional (bloqueante)
+        // en una operación reactiva que puede ejecutarse de manera diferida.
         return Mono.fromCallable(() -> {
             Thread.sleep(150);
             // simular error con 10% de probabilidad
