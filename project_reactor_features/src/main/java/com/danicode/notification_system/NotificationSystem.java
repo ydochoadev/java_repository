@@ -50,6 +50,8 @@ public class NotificationSystem {
         this.phoneService = new PhoneService();
 
         this.notificationCache = new ConcurrentHashMap<>();
+
+        this.setupProcessingFlows();
     }
 
     private void setupProcessingFlows() {
