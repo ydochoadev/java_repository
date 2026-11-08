@@ -8,9 +8,9 @@ import com.danicode.notification_system.service.NotificationService;
 import com.danicode.notification_system.service.PhoneService;
 import com.danicode.notification_system.service.TeamService;
 import lombok.Getter;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
-import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.Objects;
@@ -50,6 +50,18 @@ public class NotificationSystem {
         this.phoneService = new PhoneService();
 
         this.notificationCache = new ConcurrentHashMap<>();
+    }
+
+    private void setupProcessingFlows() {
+        this.mainEvent.
+                asFlux()
+                .doOnNext(event -> System.out.println("Received New Event: " + event))
+                .doOnNext(this::updateEventStatus)
+                .doOnNext(this.historySink::tryEmitNext)
+                .subscribe(this::routeEventByPriority);
+        this.setupTeamsProcessor();
+        this.setupEmailProcessor();
+        this.setupPhoneProcessor();
     }
 
     private void updateEventStatus(NotificationEvent event) {
@@ -111,7 +123,7 @@ public class NotificationSystem {
     }
 
     // Subscriptor para Email
-    private void emailProcessor() {
+    private void setupEmailProcessor() {
         this.emailSink
                 .asMono()
                 // Se vuelve a subscribir
@@ -126,7 +138,7 @@ public class NotificationSystem {
     }
 
     // Subscriptor para Phone
-    private void phoneProcessor() {
+    private void setupPhoneProcessor() {
         this.phoneSink
                 .asMono()
                 // Se vuelve a subscribir
@@ -136,7 +148,30 @@ public class NotificationSystem {
                         .subscribeOn(Schedulers.boundedElastic())
                         .doOnSuccess(success -> this.updateSuccessStatus(event, PHONE_CHANNEL))
                         .doOnError(error -> this.updateErrorStatus(event, PHONE_CHANNEL, error))
+                        .retry(3)
                         .onErrorResume(error -> Mono.just(false)))
                 .subscribe();
+    }
+
+    // Publicar un evento en el sink principal
+    public void publishEvent(NotificationEvent event) {
+        this.mainEvent.tryEmitNext(event);
+    }
+
+    // Historial de notificaciones
+    public Flux<NotificationEvent> getNotificationHistory() {
+        return this.historySink.asFlux();
+    }
+
+    // Obtener notificación por id
+    public Mono<NotificationEvent> getNotificationById(String id) {
+        return Mono.justOrEmpty(this.notificationCache.get(id));
+    }
+
+    // Reenvío con reintentos
+    public Flux<NotificationEvent> retryNotification() {
+        return Flux.fromIterable(this.notificationCache.values())
+                .filter(event -> event.getStatus() == NotificationStatus.FAILED)
+                .doOnNext(this::publishEvent);
     }
 }
