@@ -134,8 +134,6 @@ public class NotificationSystem {
     private void setupTeamsProcessor() {
         this.teamsSink
                 .asMono()
-                // Se vuelve a subscribir
-                .repeat()
                 .flatMap(event -> this.teamsService.sendNotification(event)
                         // Sobre qué hilo se subscribe
                         .subscribeOn(Schedulers.boundedElastic())
@@ -149,8 +147,6 @@ public class NotificationSystem {
     private void setupEmailProcessor() {
         this.emailSink
                 .asMono()
-                // Se vuelve a subscribir
-                .repeat()
                 .flatMap(event -> this.emailService.sendNotification(event)
                         // Sobre qué hilo se subscribe
                         .subscribeOn(Schedulers.boundedElastic())
@@ -164,8 +160,6 @@ public class NotificationSystem {
     private void setupPhoneProcessor() {
         this.phoneSink
                 .asMono()
-                // Se vuelve a subscribir
-                .repeat()
                 .flatMap(event -> this.phoneService.sendNotification(event)
                         // Sobre qué hilo se subscribe
                         .subscribeOn(Schedulers.boundedElastic())

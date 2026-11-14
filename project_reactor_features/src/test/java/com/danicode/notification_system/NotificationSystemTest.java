@@ -8,6 +8,9 @@ import com.danicode.notification_system.service.NotificationService;
 import com.danicode.notification_system.service.PhoneService;
 import com.danicode.notification_system.service.TeamService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -15,15 +18,14 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class NotificationSystemTest {
     private NotificationService mockTeamService;
     private NotificationService mockEmailService;
     private NotificationService mockPhoneService;
 
-    private NotificationSystem notificationService;
+    private NotificationSystem notificationSystem;
 
     // Tipo de dato especial para reactividad
     private AtomicInteger teamCallCount;
@@ -56,6 +58,28 @@ public class NotificationSystemTest {
                     this.phoneCallCount.incrementAndGet();
                     return Mono.just(true);
                 });
+
+        this.notificationSystem = new NotificationSystem(
+                this.mockTeamService,
+                this.mockEmailService,
+                this.mockPhoneService);
+    }
+
+    @Test
+    @DisplayName("Should sends events with LOW priority")
+    void testLowPriority() {
+        NotificationEvent notificationEvent = this.createTestEvent(Priority.LOW);
+        this.notificationSystem.publishEvent(notificationEvent);
+
+        this.sleep(500);
+
+        verify(mockTeamService, times(1)).sendNotification(notificationEvent);
+        verify(mockEmailService, never()).sendNotification(notificationEvent);
+        verify(mockPhoneService, never()).sendNotification(notificationEvent);
+
+        assert this.teamCallCount.get() == 1;
+        assert this.emailCallCount.get() == 0;
+        assert this.phoneCallCount.get() == 0;
     }
 
     private NotificationEvent createTestEvent(Priority priority) {
