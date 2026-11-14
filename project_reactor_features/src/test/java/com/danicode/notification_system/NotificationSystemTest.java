@@ -1,6 +1,8 @@
 package com.danicode.notification_system;
 
 import com.danicode.notification_system.models.NotificationEvent;
+import com.danicode.notification_system.models.NotificationStatus;
+import com.danicode.notification_system.models.Priority;
 import com.danicode.notification_system.service.EmailService;
 import com.danicode.notification_system.service.NotificationService;
 import com.danicode.notification_system.service.PhoneService;
@@ -8,6 +10,8 @@ import com.danicode.notification_system.service.TeamService;
 import org.junit.jupiter.api.BeforeEach;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -52,5 +56,24 @@ public class NotificationSystemTest {
                     this.phoneCallCount.incrementAndGet();
                     return Mono.just(true);
                 });
+    }
+
+    private NotificationEvent createTestEvent(Priority priority) {
+        return NotificationEvent.builder()
+                .id(UUID.randomUUID().toString())
+                .source("TEST")
+                .message("Test msg with priority: " + priority.toString())
+                .priority(priority)
+                .timestamp(LocalDateTime.now())
+                .status(NotificationStatus.PENDING)
+                .build();
+    }
+
+    private void sleep(long mills) {
+        try {
+            Thread.sleep(mills);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
