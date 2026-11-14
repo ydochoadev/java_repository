@@ -82,6 +82,38 @@ public class NotificationSystemTest {
         assert this.phoneCallCount.get() == 0;
     }
 
+    @Test
+    @DisplayName("Should send events with MEDIUM priority")
+    void mediumPriorityEventsShouldGoToTeamsAndEmail() {
+        NotificationEvent testEvent = createTestEvent(Priority.MEDIUM);
+
+        notificationSystem.publishEvent(testEvent);
+
+        verify(mockTeamService, times(1)).sendNotification(any());
+        verify(mockEmailService, times(1)).sendNotification(any());
+        verify(mockPhoneService, never()).sendNotification(any());
+
+        assert teamCallCount.get() == 1;
+        assert emailCallCount.get() == 1;
+        assert phoneCallCount.get() == 0;
+    }
+
+    @Test
+    @DisplayName("Should send events with HIGH priority")
+    void highPriorityEventsShouldGoToAllChannels() {
+        NotificationEvent testEvent = createTestEvent(Priority.HIGH);
+
+        notificationSystem.publishEvent(testEvent);
+
+        verify(mockTeamService, times(1)).sendNotification(any());
+        verify(mockEmailService, times(1)).sendNotification(any());
+        verify(mockPhoneService, times(1)).sendNotification(any());
+
+        assert teamCallCount.get() == 1;
+        assert emailCallCount.get() == 1;
+        assert phoneCallCount.get() == 1;
+    }
+
     private NotificationEvent createTestEvent(Priority priority) {
         return NotificationEvent.builder()
                 .id(UUID.randomUUID().toString())
