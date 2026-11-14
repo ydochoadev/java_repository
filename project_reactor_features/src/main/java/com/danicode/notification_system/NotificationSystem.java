@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Schedulers;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,6 +55,26 @@ public class NotificationSystem {
         this.setupProcessingFlows();
     }
 
+    public NotificationSystem(
+            NotificationService teamsService,
+            NotificationService emailService,
+            NotificationService phoneService) {
+        this.mainEvent = Sinks.many().multicast().onBackpressureBuffer();
+        this.historySink = Sinks.many().replay().limit(50);
+
+        this.teamsSink = Sinks.one();
+        this.emailSink = Sinks.one();
+        this.phoneSink = Sinks.one();
+
+        this.teamsService = teamsService;
+        this.emailService = emailService;
+        this.phoneService = phoneService;
+
+        this.notificationCache = new ConcurrentHashMap<>();
+
+        setupProcessingFlows();
+    }
+
     private void setupProcessingFlows() {
         this.mainEvent.
                 asFlux()
@@ -70,7 +91,7 @@ public class NotificationSystem {
         // Si status es nulo, es la primera vez que se envía
         if (Objects.isNull(event.getStatus())) {
             event.setId(UUID.randomUUID().toString());
-            event.setId(UUID.randomUUID().toString());
+            event.setStatus(NotificationStatus.PENDING);
         }
         this.notificationCache.put(event.getId(), event);
     }
